@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Members Benefits — La French Tech Denver</title>
+<style>
+:root {
+  --bg: #f7f7fb;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+  --primary: #e6005c;
+  --primary-contrast: #ffffff;
+  --accent: #0ea5e9;
+  --ring: rgba(230,0,92,0.2);
+  --shadow: 0 10px 30px rgba(2,6,23,0.08);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  background: var(--bg) url('assets/pattern.svg') center/120px repeat;
+  color: var(--text);
+  line-height: 1.6;
+}
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #e5e7eb;
+}
+.nav-inner { display: flex; align-items: center; gap: 20px; justify-content: space-between; }
+.logo { display:flex; align-items:center; gap:12px; font-weight: 700; }
+.logo-mark {
+  width: 14px; height: 14px; border-radius: 4px; background: linear-gradient(135deg, var(--primary), #ff3a8c);
+  box-shadow: inset 0 -2px 8px rgba(0,0,0,0.15);
+}
+.menu { display: flex; gap: 18px; flex-wrap: wrap; }
+.menu a {
+  padding: 10px 12px; border-radius: 12px;
+}
+.menu a.active, .menu a:hover {
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+.hero {
+  background: url('assets/hero-bg.jpg') center/cover no-repeat,
+              radial-gradient(1200px 400px at 10% -20%, rgba(14,165,233,0.08), transparent),
+              radial-gradient(800px 300px at 90% 0%, rgba(230,0,92,0.08), transparent);
+  padding: 72px 0 36px;
+}
+.hero h1 { font-size: clamp(28px, 5vw, 42px); margin: 0 0 8px; letter-spacing: -0.02em; }
+.hero p { color: var(--muted); margin: 8px 0 0; max-width: 60ch; }
+.grid { display: grid; gap: 20px; }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr; } .grid-2 { grid-template-columns: 1fr; } }
+.card {
+  background: var(--card);
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.kpi .num { font-size: 32px; font-weight: 800; }
+.kpi .label { color: var(--muted); }
+.section h2 { font-size: 24px; letter-spacing: -0.01em; }
+.badge {
+  display:inline-flex; align-items:center; gap:8px; background: #fff; border:1px solid #e5e7eb; color:#0f172a; border-radius: 999px; padding: 6px 12px; font-weight: 600;
+}
+.cta {
+  display:inline-block; background: var(--primary); color: var(--primary-contrast); padding: 12px 16px; border-radius: 12px; font-weight: 700; box-shadow: 0 6px 16px var(--ring);
+}
+.cta:hover { transform: translateY(-1px); box-shadow: 0 10px 22px var(--ring); }
+.footer {
+  margin-top: 48px; padding: 28px 0; border-top: 1px solid #e5e7eb; color: var(--muted); font-size: 14px;
+}
+.partner {
+  display:flex; gap:14px; align-items:flex-start;
+}
+.partner img { width: 120px; height: auto; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; }
+.partner h4 { margin: 0; }
+.board { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
+@media (max-width: 900px) { .board { grid-template-columns: 1fr; } }
+.board .person h4 { margin: 8px 0 0; }
+.event { display:grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: flex-start; }
+.event .date { text-align:center; }
+.event .date .month { font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.event .date .day { font-size: 28px; font-weight: 800; }
+.note { font-size: 14px; color: var(--muted); }
+</style>
+
+<header class="nav">
+  <div class="container nav-inner">
+    <div class="logo"><span class="logo-mark"></span><span>La French Tech Denver</span></div>
+    <nav class="menu"><a href="index.html" class="">Home</a><a href="about.html" class="">About us</a><a href="companies-sponsors.html" class="">Companies & Sponsors</a><a href="members-benefits.html" class="active">Members Benefits</a><a href="events.html" class="">Events</a><a href="resources.html" class="">Resources</a></nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <h1>Members Benefits</h1>
+    <p>Join a community of 230+ professionals in the Denver tech scene dedicated to advancing innovation in Colorado.</p>
+    <p><a class="cta" href="https://docs.google.com/forms/d/e/1FAIpQLScx5w2YxgQ/viewform" target="_blank" rel="noopener">Join La French Tech Denver</a></p>
+  </div>
+</section>
+<div class="container">
+  <div class="grid grid-2">
+    <div class="card">
+      <h2>For Individuals & Professionals</h2>
+      <ul>
+        <li>Join the community</li>
+        <li>Get the latest news from the network</li>
+        <li>Connect to the global French Tech network</li>
+        <li><strong>Free</strong></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>For Companies & Organizations</h2>
+      <ul>
+        <li>Be featured in our directory</li>
+        <li>Share your news with the community</li>
+        <li>Privileged access to recruitment</li>
+        <li>Advice on growth from the network</li>
+        <li>Propose initiatives under La French Tech Denver</li>
+        <li>Connect to the global La French Tech network</li>
+        <li><strong>Free</strong></li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Why become a member?</h2>
+    <p>Membership brings you closer to a strong and open network focused on startups and innovation in the Denver Metro Area and beyond.</p>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div>© 2025 La French Tech Denver — Community-run in Denver, CO</div>
+    <div class="note">Static export using assets from the original site.</div>
+  </div>
+</footer>
+
+</html>
