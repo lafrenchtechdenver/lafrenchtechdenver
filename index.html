@@ -9,11 +9,32 @@
   --card: #ffffff;
   --text: #0f172a;
   --muted: #475569;
-  --primary: #e6005c;
+  --primary: #EF4135;
   --primary-contrast: #ffffff;
-  --accent: #0ea5e9;
-  --ring: rgba(230,0,92,0.2);
+  --accent: #0055A4;
+  --ring: rgba(239,65,53,0.2);
   --shadow: 0 10px 30px rgba(2,6,23,0.08);
+  --border: #e5e7eb;
+  --nav-bg: rgba(255,255,255,0.7);
+  --badge-bg: #fff;
+  --hero-gradient-1: rgba(0,85,164,0.08);
+  --hero-gradient-2: rgba(239,65,53,0.08);
+}
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --primary: #EF4135;
+  --primary-contrast: #ffffff;
+  --accent: #3b82f6;
+  --ring: rgba(239,65,53,0.3);
+  --shadow: 0 10px 30px rgba(0,0,0,0.3);
+  --border: #334155;
+  --nav-bg: rgba(30,41,59,0.8);
+  --badge-bg: #1e293b;
+  --hero-gradient-1: rgba(59,130,246,0.12);
+  --hero-gradient-2: rgba(239,65,53,0.12);
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -22,35 +43,50 @@ body {
   background: var(--bg) url('assets/pattern.svg') center/120px repeat;
   color: var(--text);
   line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 a { color: var(--primary); text-decoration: none; }
 a:hover { text-decoration: underline; }
 .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
 .nav {
   position: sticky; top: 0; z-index: 50;
-  background: rgba(255,255,255,0.7);
+  background: var(--nav-bg);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border);
 }
-.nav-inner { display: flex; align-items: center; gap: 20px; justify-content: space-between; }
+.nav-inner { display: flex; align-items: center; gap: 20px; justify-content: space-between; flex-wrap: wrap; }
 .logo { display:flex; align-items:center; gap:12px; font-weight: 700; }
 .logo-mark {
-  width: 14px; height: 14px; border-radius: 4px; background: linear-gradient(135deg, var(--primary), #ff3a8c);
+  width: 14px; height: 14px; border-radius: 4px;
+  background: linear-gradient(135deg, var(--accent), var(--primary));
   box-shadow: inset 0 -2px 8px rgba(0,0,0,0.15);
 }
-.menu { display: flex; gap: 18px; flex-wrap: wrap; }
+.menu { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
 .menu a {
   padding: 10px 12px; border-radius: 12px;
+  transition: all 0.2s ease;
 }
 .menu a.active, .menu a:hover {
-  background: #fff;
+  background: var(--card);
   box-shadow: var(--shadow);
+}
+.theme-toggle {
+  padding: 8px 10px; border-radius: 8px; background: none; border: none;
+  cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 6px;
+  transition: all 0.2s ease; opacity: 0.6;
+}
+.theme-toggle:hover {
+  background: var(--card);
+  opacity: 1;
 }
 .hero {
   background: url('assets/hero.jpg') center/cover no-repeat,
-              radial-gradient(1200px 400px at 10% -20%, rgba(14,165,233,0.08), transparent),
-              radial-gradient(800px 300px at 90% 0%, rgba(230,0,92,0.08), transparent);
+              radial-gradient(1200px 400px at 10% -20%, var(--hero-gradient-1), transparent),
+              radial-gradient(800px 300px at 90% 0%, var(--hero-gradient-2), transparent);
   padding: 72px 0 36px;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
 }
 .hero h1 { font-size: clamp(28px, 5vw, 42px); margin: 0 0 8px; letter-spacing: -0.02em; }
 .hero p { color: var(--muted); margin: 8px 0 0; max-width: 60ch; }
@@ -60,10 +96,11 @@ a:hover { text-decoration: underline; }
 @media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr; } .grid-2 { grid-template-columns: 1fr; } }
 .card {
   background: var(--card);
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 18px;
   box-shadow: var(--shadow);
   padding: 20px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0,1fr)); } }
@@ -71,19 +108,20 @@ a:hover { text-decoration: underline; }
 .kpi .label { color: var(--muted); }
 .section h2 { font-size: 24px; letter-spacing: -0.01em; }
 .badge {
-  display:inline-flex; align-items:center; gap:8px; background: #fff; border:1px solid #e5e7eb; color:#0f172a; border-radius: 999px; padding: 6px 12px; font-weight: 600;
+  display:inline-flex; align-items:center; gap:8px; background: var(--badge-bg); border:1px solid var(--border); color:var(--text); border-radius: 999px; padding: 6px 12px; font-weight: 600;
 }
 .cta {
   display:inline-block; background: var(--primary); color: var(--primary-contrast); padding: 12px 16px; border-radius: 12px; font-weight: 700; box-shadow: 0 6px 16px var(--ring);
+  transition: all 0.2s ease;
 }
-.cta:hover { transform: translateY(-1px); box-shadow: 0 10px 22px var(--ring); }
+.cta:hover { transform: translateY(-1px); box-shadow: 0 10px 22px var(--ring); text-decoration: none; }
 .footer {
-  margin-top: 48px; padding: 28px 0; border-top: 1px solid #e5e7eb; color: var(--muted); font-size: 14px;
+  margin-top: 48px; padding: 28px 0; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px;
 }
 .partner {
   display:flex; gap:14px; align-items:flex-start;
 }
-.partner img { width: 120px; height: auto; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; }
+.partner img { width: 120px; height: auto; border-radius: 12px; border: 1px solid var(--border); background: var(--card); }
 .partner h4 { margin: 0; }
 .board { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
 @media (max-width: 900px) { .board { grid-template-columns: 1fr; } }
@@ -96,17 +134,47 @@ a:hover { text-decoration: underline; }
 .event .date .day { font-size: 28px; font-weight: 800; }
 .note { font-size: 14px; color: var(--muted); }
 </style>
+<script>
+// Theme toggle functionality
+function initTheme() {
+  const theme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeIcon(theme);
+}
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  updateThemeIcon(newTheme);
+}
+function updateThemeIcon(theme) {
+  const toggle = document.getElementById('theme-toggle');
+  if (toggle) {
+    toggle.innerHTML = theme === 'light' ? '◐' : '◑';
+  }
+}
+// Initialize theme on page load
+initTheme();
+</script>
 
 <header class="nav">
   <div class="container nav-inner">
-    <div class="logo"><span class="logo-mark"></span><span>La French Tech Denver</span></div>
-    <nav class="menu"><a href="index.html" class="active">Home</a><a href="about.html" class="">About us</a><a href="companies-sponsors.html" class="">Companies & Sponsors</a><a href="members-benefits.html" class="">Members Benefits</a><a href="events.html" class="">Events</a><a href="resources.html" class="">Resources</a></nav>
+    <div class="logo"><img src="assets/logos/Logo_FT_Denver.png" alt="La French Tech Denver logo" style="height: 40px; width: auto;"><span>La French Tech Denver</span></div>
+    <nav class="menu">
+      <a href="index.html" class="active">Home</a>
+      <a href="about.html" class="">About us</a>
+      <a href="companies-sponsors.html" class="">Companies & Sponsors</a>
+      <a href="members-benefits.html" class="">Members Benefits</a>
+      <a href="events.html" class="">Events</a>
+      <a href="resources.html" class="">Resources</a>
+      <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">◐</button>
+    </nav>
   </div>
 </header>
 
 <section class="hero">
   <div class="container">
-    <span class="badge">Community • Startups • Denver</span>
     <h1>La French Tech Denver</h1>
     <p>Your tech rendez-vous with a French touch and mountain views</p>
     <p><a class="cta" href="https://docs.google.com/forms/d/e/1FAIpQLScx5w2YxgQ/viewform" target="_blank" rel="noopener">Become a Member</a></p>

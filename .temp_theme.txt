@@ -1,8 +1,3 @@
-<!doctype html>
-<html lang="en">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>About — La French Tech Denver</title>
 <style>
 :root {
   --bg: #f7f7fb;
@@ -71,22 +66,19 @@ a:hover { text-decoration: underline; }
   box-shadow: var(--shadow);
 }
 .theme-toggle {
-  padding: 8px 10px; border-radius: 8px; background: none; border: none;
-  cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 6px;
-  transition: all 0.2s ease; opacity: 0.6;
+  padding: 10px 12px; border-radius: 12px; background: none; border: none;
+  cursor: pointer; font-size: 18px; display: flex; align-items: center; gap: 6px;
+  transition: all 0.2s ease;
 }
 .theme-toggle:hover {
   background: var(--card);
-  opacity: 1;
+  box-shadow: var(--shadow);
 }
 .hero {
   background: url('assets/hero.jpg') center/cover no-repeat,
               radial-gradient(1200px 400px at 10% -20%, var(--hero-gradient-1), transparent),
               radial-gradient(800px 300px at 90% 0%, var(--hero-gradient-2), transparent);
   padding: 72px 0 36px;
-  min-height: 280px;
-  display: flex;
-  align-items: center;
 }
 .hero h1 { font-size: clamp(28px, 5vw, 42px); margin: 0 0 8px; letter-spacing: -0.02em; }
 .hero p { color: var(--muted); margin: 8px 0 0; max-width: 60ch; }
@@ -151,94 +143,10 @@ function toggleTheme() {
 function updateThemeIcon(theme) {
   const toggle = document.getElementById('theme-toggle');
   if (toggle) {
-    toggle.innerHTML = theme === 'light' ? '◐' : '◑';
+    toggle.innerHTML = theme === 'light' ? '🌙' : '☀️';
   }
 }
 // Initialize theme on page load
 initTheme();
 </script>
 
-<header class="nav">
-  <div class="container nav-inner">
-    <div class="logo"><img src="assets/logos/Logo_FT_Denver.png" alt="La French Tech Denver logo" style="height: 40px; width: auto;"><span>La French Tech Denver</span></div>
-    <nav class="menu">
-      <a href="index.html" class="">Home</a>
-      <a href="about.html" class="active">About us</a>
-      <a href="companies-sponsors.html" class="">Companies & Sponsors</a>
-      <a href="members-benefits.html" class="">Members Benefits</a>
-      <a href="events.html" class="">Events</a>
-      <a href="resources.html" class="">Resources</a>
-      <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">◐</button>
-    </nav>
-  </div>
-</header>
-
-<section class="hero">
-  <div class="container">
-    <h1>About La French Tech Denver</h1>
-    <p>We are a curated support community helping entrepreneurs thrive through a strong network and shared best practices.</p>
-  </div>
-</section>
-<div class="container">
-  <div class="grid grid-2">
-    <div class="card">
-      <h2>Our Mission</h2>
-      <p>Bring French entrepreneurs together, help develop startups, and support French-speaking tech players in the Denver/Boulder region. We connect French startups with investors and local tech leaders.</p>
-      <h3>Goals</h3>
-      <ul>
-        <li>Support existing French startups in Colorado</li>
-        <li>Grow an ecosystem where anyone can build in the Rockies</li>
-        <li>Bridge the local tech scene with French founders and talent</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h2>Our Values</h2>
-      <ul>
-        <li>Collaboration — Support & Accelerate</li>
-        <li>Innovation — Empower & Federate</li>
-        <li>Entrepreneurship — Inspire & Shine</li>
-      </ul>
-    </div>
-  </div>
-  <div class="section">
-    <h2>Meet the Board</h2>
-    <div class="board">
-      <div class="card person">
-        <img alt="Ben Bouteille" src="assets/board/ben.jpeg" style="filter: grayscale(100%);"/>
-        <h4>Ben Bouteille</h4><div class="note">President — Head of Marketing & Event at Superteam</div>
-      </div>
-      <div class="card person">
-        <img alt="Baptiste Le Poittevin" src="assets/board/baptiste.jpeg" style="filter: grayscale(100%);"/>
-        <h4>Baptiste Le Poittevin</h4><div class="note">Vice President — Commercial Director, Autonomous Technology at Einride</div>
-      </div>
-      <div class="card person">
-        <img alt="Patrizia Marzialli" src="assets/board/patrizia.jpeg" style="object-position: 0 0px; filter: grayscale(100%);"/>
-        <h4>Patrizia Marzialli</h4><div class="note">Board Member — COO & Founding Partner, Ridiculous Engineering</div>
-      </div>
-      <div class="card person">
-        <img alt="Sandrine Vohra" src="assets/board/sandrine.jpg" style="object-position: 0 0px; filter: grayscale(100%);"/>
-        <h4>Sandrine Vohra</h4><div class="note">Board Member — Multicultural Marketing Consultant & Business Advisor</div>
-      </div>
-      <div class="card person">
-        <img alt="Arthur Rio" src="assets/board/arthur.jpg" style="filter: grayscale(100%);" />
-        <h4>Arthur Rio</h4><div class="note">Board Member — Software Engineer at Modelcode AI</div>
-      </div>
-      <div class="card person">
-        <img alt="Clémence Viot" src="assets/board/clemence.jpeg" style="filter: grayscale(100%);"/>
-        <h4>Clémence Viot</h4><div class="note">Board Member — CEO & Owner at Mad Science of Colorado</div>
-      </div>
-      <div class="card person">
-        <img alt="Elina Hakobyan Roetynck" src="assets/board/elina.jpeg" style="filter: grayscale(100%);"/>
-        <h4>Elina Hakobyan Roetynck</h4><div class="note">Board Member — Director of Operations | Customer Success at Extern</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<footer class="footer">
-  <div class="container">
-    <div>© 2025 La French Tech Denver — Community-run in Denver, CO</div>
-  </div>
-</footer>
-
-</html>
