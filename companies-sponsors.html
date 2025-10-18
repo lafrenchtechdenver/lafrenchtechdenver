@@ -90,6 +90,48 @@ a:hover { text-decoration: underline; }
   color: #f1f5f9;
   opacity: 0.7;
 }
+.burger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+.burger span {
+  width: 24px;
+  height: 2px;
+  background: var(--text);
+  transition: all 0.3s ease;
+}
+.burger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(4.25px, 4.25px);
+}
+.burger.active span:nth-child(2) {
+  opacity: 0;
+}
+.burger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(4.25px, -4.25px);
+}
+@media (max-width: 900px) {
+  .burger { display: flex; }
+  .menu { 
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: var(--nav-bg);
+    backdrop-filter: blur(10px);
+    flex-direction: column;
+    padding: 16px;
+    gap: 8px;
+    display: none;
+    box-shadow: var(--shadow);
+  }
+  .menu.active { display: flex; }
+  .menu a { width: 100%; text-align: center; }
+}
 .hero {
   background: url('assets/hero.jpg') center 65%/cover no-repeat,
               radial-gradient(1200px 400px at 10% -20%, var(--hero-gradient-1), transparent),
@@ -169,12 +211,39 @@ function updateThemeIcon(theme) {
 }
 // Initialize theme on page load
 initTheme();
+
+// Mobile menu toggle
+function toggleMenu() {
+  const menu = document.getElementById('menu');
+  const burger = document.querySelector('.burger');
+  menu.classList.toggle('active');
+  burger.classList.toggle('active');
+}
+
+// Close menu when clicking outside
+document.addEventListener('click', function(event) {
+  const menu = document.getElementById('menu');
+  const burger = document.querySelector('.burger');
+  const nav = document.querySelector('.nav');
+  
+  if (menu && burger && menu.classList.contains('active')) {
+    if (!nav.contains(event.target)) {
+      menu.classList.remove('active');
+      burger.classList.remove('active');
+    }
+  }
+});
 </script>
 
 <header class="nav">
   <div class="container nav-inner">
     <div class="logo"><img src="assets/logos/Logo_FT_Denver.png" alt="La French Tech Denver logo" style="height: 40px; width: auto;"><span>La French Tech Denver</span></div>
-    <nav class="menu">
+    <button class="burger" onclick="toggleMenu()" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="menu" id="menu">
       <a href="index.html" class="">Home</a>
       <a href="about.html" class="">About us</a>
       <a href="companies-sponsors.html" class="active">Companies & Sponsors</a>
