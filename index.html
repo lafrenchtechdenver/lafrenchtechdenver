@@ -90,6 +90,23 @@ a:hover { text-decoration: underline; }
   color: #f1f5f9;
   opacity: 0.7;
 }
+.social-link {
+  padding: 8px 10px; border-radius: 8px; display: flex; align-items: center;
+  transition: all 0.2s ease; opacity: 0.6; color: var(--text);
+}
+.social-link:hover {
+  background: var(--card);
+  opacity: 1;
+}
+[data-theme="dark"] .social-link {
+  color: #f1f5f9;
+  opacity: 0.7;
+}
+.social-links {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
 .burger {
   display: none;
   flex-direction: column;
@@ -131,7 +148,9 @@ a:hover { text-decoration: underline; }
     border-bottom: 1px solid var(--border);
   }
   .menu.active { display: flex; }
-  .menu a { width: 100%; text-align: center; }
+  .menu a:not(.social-link) { width: 100%; text-align: center; }
+  .menu .social-links { display: flex; justify-content: center; gap: 8px; }
+  .menu .theme-toggle { width: 100%; justify-content: center; margin-top: 8px; }
 }
 .hero {
   background: url('assets/hero.jpg') center 65%/cover no-repeat,
@@ -251,6 +270,14 @@ document.addEventListener('click', function(event) {
       <a href="members-benefits.html" class="">Members Benefits</a>
       <a href="events.html" class="">Events</a>
       <a href="resources.html" class="">Resources</a>
+      <div class="social-links">
+        <a href="https://www.linkedin.com/company/denver-french-tech" target="_blank" rel="noopener" class="social-link" aria-label="LinkedIn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+        </a>
+        <a href="https://www.facebook.com/groups/lafrenchtechdenver/" target="_blank" rel="noopener" class="social-link" aria-label="Facebook">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
+        </a>
+      </div>
       <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">◐</button>
     </nav>
   </div>
