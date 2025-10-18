@@ -47,7 +47,7 @@ a:hover { text-decoration: underline; }
   box-shadow: var(--shadow);
 }
 .hero {
-  background: url('assets/hero-bg.jpg') center/cover no-repeat,
+  background: url('assets/hero.jpg') center/cover no-repeat,
               radial-gradient(1200px 400px at 10% -20%, rgba(14,165,233,0.08), transparent),
               radial-gradient(800px 300px at 90% 0%, rgba(230,0,92,0.08), transparent);
   padding: 72px 0 36px;
@@ -87,7 +87,9 @@ a:hover { text-decoration: underline; }
 .partner h4 { margin: 0; }
 .board { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
 @media (max-width: 900px) { .board { grid-template-columns: 1fr; } }
-.board .person h4 { margin: 8px 0 0; }
+.board .person { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.board .person img { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; margin-bottom: 12px; }
+.board .person h4 { margin: 8px 0 4px; }
 .event { display:grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: flex-start; }
 .event .date { text-align:center; }
 .event .date .month { font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
@@ -112,11 +114,9 @@ a:hover { text-decoration: underline; }
   <div class="section card">
     <h2>Friends of La French Tech Denver</h2>
     <div class="grid grid-2">
-      <div class="partner"><img alt="Mikado logo" src="assets/logos/mikado.jpg"/><div><h4>Mikado</h4><div class="note">Multicultural advertising agency</div></div></div>
-      <div class="partner"><img alt="Techstars logo" src="assets/logos/techstars.jpg"/><div><h4>Techstars</h4><div class="note">Global investment & mentorship network</div></div></div>
-      <div class="partner"><img alt="Finmark logo" src="assets/logos/finmark.jpg"/><div><h4>Finmark</h4><div class="note">Financial modeling for startups</div></div></div>
-      <div class="partner"><img alt="Codiga logo" src="assets/logos/codiga.jpg"/><div><h4>Codiga</h4><div class="note">Better code, faster — analysis & automation</div></div></div>
-      <div class="partner"><img alt="Notivize logo" src="assets/logos/notivize.jpg"/><div><h4>Notivize</h4><div class="note">AI-powered customer messaging</div></div></div>
+      <div class="partner"><img alt="Mikado logo" src="assets/logos/mikado.png"/><div><h4>Mikado</h4><div class="note">Multicultural advertising agency</div></div></div>
+      <div class="partner"><img alt="Techstars logo" src="assets/logos/techstars.png"/><div><h4>Techstars</h4><div class="note">Global investment & mentorship network</div></div></div>
+      <div class="partner"><img alt="Finmark logo" src="assets/logos/finmark.jpeg"/><div><h4>Finmark</h4><div class="note">Financial modeling for startups</div></div></div>
     </div>
   </div>
   <div class="section card">

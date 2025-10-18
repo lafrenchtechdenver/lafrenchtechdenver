@@ -47,7 +47,7 @@ a:hover { text-decoration: underline; }
   box-shadow: var(--shadow);
 }
 .hero {
-  background: url('assets/hero-bg.jpg') center/cover no-repeat,
+  background: url('assets/hero.jpg') center/cover no-repeat,
               radial-gradient(1200px 400px at 10% -20%, rgba(14,165,233,0.08), transparent),
               radial-gradient(800px 300px at 90% 0%, rgba(230,0,92,0.08), transparent);
   padding: 72px 0 36px;
@@ -87,7 +87,9 @@ a:hover { text-decoration: underline; }
 .partner h4 { margin: 0; }
 .board { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
 @media (max-width: 900px) { .board { grid-template-columns: 1fr; } }
-.board .person h4 { margin: 8px 0 0; }
+.board .person { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.board .person img { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; margin-bottom: 12px; }
+.board .person h4 { margin: 8px 0 4px; }
 .event { display:grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: flex-start; }
 .event .date { text-align:center; }
 .event .date .month { font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
@@ -124,12 +126,12 @@ a:hover { text-decoration: underline; }
   <div class="section card">
     <h2>Friends & Partners</h2>
     <div class="grid grid-3">
-      <div class="partner"><img alt="Superteam logo" src="assets/logos/superteam.jpeg"/><div><h4>Superteam</h4><div class="note">Marketing & Events</div></div></div>
-      <div class="partner"><img alt="Modelcode.ai logo" src="assets/logos/modelcodeai.jpg"/><div><h4>Modelcode.ai</h4><div class="note">Software & AI</div></div></div>
+      <div class="partner"><img alt="Superteam logo" src="assets/logos/superteam-canada.jpeg"/><div><h4>Superteam</h4><div class="note">Marketing & Events</div></div></div>
+      <div class="partner"><img alt="Modelcode.ai logo" src="assets/logos/modelcode-ai.jpg"/><div><h4>Modelcode.ai</h4><div class="note">Software & AI</div></div></div>
       <div class="partner"><img alt="Mad Science of Colorado logo" src="assets/logos/mad-science-of-colorado.jpeg"/><div><h4>Mad Science of Colorado</h4><div class="note">STEM Education</div></div></div>
       <div class="partner"><img alt="Ridiculous Engineering logo" src="assets/logos/ridiculous-engineering.jpeg"/><div><h4>Ridiculous Engineering</h4><div class="note">Engineering & Operations</div></div></div>
       <div class="partner"><img alt="Einride logo" src="assets/logos/einride.jpeg"/><div><h4>Einride</h4><div class="note">Autonomous Tech</div></div></div>
-      <div class="partner"><img alt="Extern logo" src="assets/logos/extern.jpeg"/><div><h4>Extern</h4><div class="note">Customer Success</div></div></div>
+      <div class="partner"><img alt="Extern logo" src="assets/logos/externhq.jpeg"/><div><h4>Extern</h4><div class="note">Customer Success</div></div></div>
     </div>
   </div>
 </div>
