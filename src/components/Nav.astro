@@ -1,0 +1,149 @@
+---
+/**
+ * Sticky top navigation shared by every page.
+ *
+ * Milestone 1 hard-codes the six links, social icons, and theme toggle directly.
+ * Milestone 2 will split the theme toggle and social block out into their own
+ * components and drive the links from `src/content/site.json`.
+ *
+ * The `currentPath` prop (e.g. "/", "/about.html") is used to apply the `.active`
+ * class to the matching menu entry, matching the legacy nav's active-state styling.
+ */
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+
+const menuItems: Array<{ href: string; label: string }> = [
+  { href: '/index.html', label: 'Home' },
+  { href: '/about.html', label: 'About us' },
+  { href: '/companies-sponsors.html', label: 'Companies & Sponsors' },
+  { href: '/members-benefits.html', label: 'Members Benefits' },
+  { href: '/events.html', label: 'Events' },
+  { href: '/resources.html', label: 'Resources' },
+];
+
+function isActive(href: string): boolean {
+  // Treat `/` and `/index.html` as equivalent for the Home link.
+  if (href === '/index.html') {
+    return currentPath === '/' || currentPath === '/index.html';
+  }
+  return currentPath === href;
+}
+---
+
+<header class="nav">
+  <div class="container nav-inner">
+    <div class="logo">
+      <img src="/assets/logos/Logo_FT_Denver.png" alt="La French Tech Denver logo" style="height: 40px; width: auto;" />
+      <span>La French Tech Denver</span>
+    </div>
+    <button class="burger" type="button" aria-label="Toggle menu" id="burger-button">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="menu" id="menu">
+      {menuItems.map((item) => (
+        <a href={item.href} class={isActive(item.href) ? 'active' : ''}>
+          {item.label}
+        </a>
+      ))}
+      <div class="social-links">
+        <a
+          href="https://www.linkedin.com/company/denver-french-tech"
+          target="_blank"
+          rel="noopener"
+          class="social-link"
+          aria-label="LinkedIn"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+            ><path
+              d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+            ></path></svg
+          >
+        </a>
+        <a
+          href="https://www.facebook.com/groups/lafrenchtechdenver/"
+          target="_blank"
+          rel="noopener"
+          class="social-link"
+          aria-label="Facebook"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+            ><path
+              d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"
+            ></path></svg
+          >
+        </a>
+        <a href="mailto:contact@lafrenchtechdenver.com" class="social-link" aria-label="Email">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+            ><path
+              d="M12 12.713l-11.985-9.713h23.97l-11.985 9.713zm0 2.574l-12-9.725v15.438h24v-15.438l-12 9.725z"
+            ></path></svg
+          >
+        </a>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle theme">◐</button>
+    </nav>
+  </div>
+</header>
+
+<script is:inline>
+  // Burger menu toggle + outside-click close. Kept inline so it runs without
+  // needing JS bundling and matches the legacy behavior one-to-one.
+  (function () {
+    const burger = document.getElementById('burger-button');
+    const menu = document.getElementById('menu');
+    if (!burger || !menu) return;
+
+    function toggleMenu() {
+      menu.classList.toggle('active');
+      burger.classList.toggle('active');
+    }
+
+    burger.addEventListener('click', function (event) {
+      event.stopPropagation();
+      toggleMenu();
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!menu.classList.contains('active')) return;
+      const nav = document.querySelector('.nav');
+      if (nav && !nav.contains(event.target)) {
+        menu.classList.remove('active');
+        burger.classList.remove('active');
+      }
+    });
+  })();
+
+  // Theme toggle: swaps data-theme, persists to localStorage, updates the icon.
+  // The initial data-theme attribute is set in BaseLayout's <head> so there is
+  // no FOUC before this script runs.
+  (function () {
+    const toggle = document.getElementById('theme-toggle');
+    if (!toggle) return;
+
+    function updateIcon(theme) {
+      toggle.innerHTML = theme === 'light' ? '◐' : '◑';
+    }
+
+    // Reflect the current state in the icon on load.
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    updateIcon(current);
+
+    toggle.addEventListener('click', function () {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      try {
+        localStorage.setItem('theme', newTheme);
+      } catch (e) {
+        // localStorage may be disabled — theme will reset on reload.
+      }
+      updateIcon(newTheme);
+    });
+  })();
+</script>
