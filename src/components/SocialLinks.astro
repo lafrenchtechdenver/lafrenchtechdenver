@@ -1,14 +1,20 @@
 ---
 /**
- * LinkedIn / Facebook / mailto block, used in the nav (and reused later in
- * the footer if needed). URLs are passed in as props for now; once Milestone 3
- * lands `src/content/site.json`, the default props here will be wired to read
- * from the `site` data collection.
+ * LinkedIn / Facebook / mailto block, used in the nav (and reusable in any
+ * other page chrome that needs the social block).
+ *
+ * Milestone 3 wires this component to read from the `site` data collection
+ * (`src/content/site/social.json`), eliminating the last copy of the social
+ * URLs from component code. Props remain accepted as overrides — primarily
+ * used by tests that want to assert against synthetic URLs without touching
+ * the JSON file — but the defaults come from the collection so a single edit
+ * to `site.json` updates every page.
  *
  * `currentColor` SVGs make the icons inherit the surrounding `.social-link`
  * text color, which the global stylesheet keys to `var(--text)` so the icons
  * stay legible in both light and dark themes.
  */
+import { getEntry } from 'astro:content';
 
 interface Props {
   linkedinUrl?: string;
@@ -16,10 +22,18 @@ interface Props {
   contactEmail?: string;
 }
 
+const siteEntry = await getEntry('site', 'social');
+if (!siteEntry) {
+  throw new Error(
+    "SocialLinks: missing 'social' entry in the `site` data collection " +
+      '(expected at src/content/site/social.json).',
+  );
+}
+
 const {
-  linkedinUrl = 'https://www.linkedin.com/company/denver-french-tech',
-  facebookUrl = 'https://www.facebook.com/groups/lafrenchtechdenver/',
-  contactEmail = 'contact@lafrenchtechdenver.com',
+  linkedinUrl = siteEntry.data.linkedinUrl,
+  facebookUrl = siteEntry.data.facebookUrl,
+  contactEmail = siteEntry.data.contactEmail,
 } = Astro.props;
 
 const mailtoHref = `mailto:${contactEmail}`;
