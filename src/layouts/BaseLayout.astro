@@ -1,8 +1,15 @@
 ---
 /**
  * Single source of truth for every page's <head>, global CSS import, theme
- * bootstrap, nav, and footer. All six pages render their unique content into
- * this layout's default <slot>.
+ * bootstrap, skip-link, nav, main landmark, and footer. All six pages render
+ * their unique content into this layout's default <slot>.
+ *
+ * DOM order is load-bearing for accessibility: the skip-link is the first
+ * focusable element on every page (placed BEFORE <Nav> so the nav's
+ * outside-click handler does not capture clicks meant for the link), and the
+ * skip-link target `<main id="main-content">` wraps the page slot. See
+ * `project_wiki/architecture/accessibility.md` for the full WCAG 2.2 AA
+ * baseline this layout establishes.
  *
  * Meta defaults mirror the legacy inline <head>: OpenGraph + Twitter cards
  * pointing at the Logo_FT_Denver image, favicon at /assets/favicon.ico.
@@ -47,7 +54,9 @@ const currentPath = Astro.url.pathname;
       Theme bootstrap. Runs synchronously in <head> before <body> parses, so the
       `data-theme` attribute is correct on first paint and there is no flash of
       unstyled theme when a dark-mode user reloads. Keep this as a tiny inline
-      script — the interactive toggle handler lives in Nav.astro.
+      script — moving it to the ThemeToggle component would delay execution
+      until after paint and reintroduce the FOUC. See
+      `instructions/keep_theme_bootstrap_inline_in_head.md`.
     */}
     <script is:inline>
       (function () {
@@ -61,8 +70,18 @@ const currentPath = Astro.url.pathname;
     </script>
   </head>
   <body>
+    {/*
+      Skip-to-content link. MUST stay BEFORE <Nav> in DOM order so:
+      1. A keyboard user pressing Tab once lands on it.
+      2. The Nav's outside-click handler (which closes the mobile menu when a
+         click happens outside `.nav`) does not swallow Enter/click events on
+         the skip-link.
+    */}
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <Nav currentPath={currentPath} />
-    <slot />
+    <main id="main-content">
+      <slot />
+    </main>
     <Footer />
   </body>
 </html>
