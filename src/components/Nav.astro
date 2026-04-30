@@ -45,7 +45,23 @@ function isActive(href: string): boolean {
 <header class="nav">
   <div class="container nav-inner">
     <div class="logo">
-      <img src="/assets/logos/Logo_FT_Denver.png" alt="La French Tech Denver logo" style="height: 40px; width: auto;" />
+      {/*
+        Intentional raw <img>. The brand mark is also the canonical OpenGraph
+        / Twitter card image referenced by the absolute URL
+        `https://lafrenchtechdenver.com/assets/logos/Logo_FT_Denver.png` in
+        `BaseLayout.astro`. Routing it through Astro's `<Image>` component
+        would rewrite the path to a hashed `/_astro/Logo_FT_Denver-…` filename
+        and break every social-share preview pointing at the stable URL — so
+        the file is kept under `public/assets/logos/` and rendered here as a
+        small (51 KB) static asset. Documented in `MILESTONE.md` ("Risks").
+      */}
+      <img
+        src="/assets/logos/Logo_FT_Denver.png"
+        alt="La French Tech Denver logo"
+        width="40"
+        height="40"
+        style="height: 40px; width: auto;"
+      />
       <span>La French Tech Denver</span>
     </div>
     <button class="burger" type="button" aria-label="Toggle menu" id="burger-button">
