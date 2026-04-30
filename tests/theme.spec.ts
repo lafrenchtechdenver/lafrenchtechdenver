@@ -93,7 +93,13 @@ test.describe('Theme Toggle', () => {
     ];
 
     for (const url of pages) {
-      await page.goto(url);
+      // `/events.html` embeds the Luma calendar iframe, whose React app keeps
+      // the page's `load` event open for ~30 s on every visit. The default
+      // `page.goto(...)` waits for `load`, which times out the test even
+      // though our chrome (nav + hero + iframe wrapper) has long since
+      // rendered. `domcontentloaded` is sufficient for verifying the theme
+      // toggle is present.
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
       const toggle = page.locator('#theme-toggle');
       await expect(toggle, `#theme-toggle should be visible on ${url}`).toBeVisible();
     }
