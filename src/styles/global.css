@@ -351,19 +351,51 @@
 
   /* ---- Hero -------------------------------------------------------------- */
   /*
-   * The hero stacks (top→bottom):
-   *   1. The hero photo at center 65% / cover (background image).
-   *   2. A theme-aware gradient overlay (`--hero-overlay`) — light scrim in
-   *      light mode, dark scrim in dark mode — so the heading hits AA contrast
-   *      against any crop of the photo.
-   *   3. Two soft brand-color radial gradients (kept from the legacy design).
+   * Milestone 4 swaps the legacy CSS `background-image: url('/assets/hero.jpg')`
+   * for an absolute-positioned `<Image>` (Astro / Sharp) inside the section.
+   * That gives us responsive `srcset`, AVIF/WebP fallbacks, and a delivered
+   * weight under 300 KB on modern browsers (down from a flat 2.4 MB JPEG).
    *
-   * Background-image syntax stacks first → top, last → bottom, so the photo is
-   * listed last.
+   * The visual stacking order is:
+   *   1. `.hero-image` — the optimized photo (z-index: 0)
+   *   2. `::before`    — theme-aware gradient overlay (`--hero-overlay`)
+   *   3. `::after`     — two soft brand-color radial gradients (legacy look)
+   *   4. `.container`  — heading + subhead text (z-index: 1)
+   *
+   * The hero is the LCP candidate on every page that uses it, so the `<Image>`
+   * sets `loading="eager"` + `fetchpriority="high"` (declared in `Hero.astro`).
    */
   .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 72px 0 36px;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    isolation: isolate;
+  }
+  .hero .hero-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 65%;
+    z-index: -2;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--hero-overlay);
+    z-index: -1;
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
     background:
-      var(--hero-overlay),
       radial-gradient(
         1200px 400px at 10% -20%,
         var(--hero-gradient-1),
@@ -373,12 +405,13 @@
         800px 300px at 90% 0%,
         var(--hero-gradient-2),
         transparent
-      ),
-      url('/assets/hero.jpg') center 65%/cover no-repeat;
-    padding: 72px 0 36px;
-    min-height: 280px;
-    display: flex;
-    align-items: center;
+      );
+    z-index: -1;
+    pointer-events: none;
+  }
+  .hero .container {
+    position: relative;
+    z-index: 1;
   }
   .hero h1 {
     font-size: clamp(28px, 5vw, 42px);

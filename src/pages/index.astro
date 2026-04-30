@@ -12,6 +12,7 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection, getEntry } from 'astro:content';
+import Hero from '../components/Hero.astro';
 import KpiCard from '../components/KpiCard.astro';
 import PartnerCard from '../components/PartnerCard.astro';
 
@@ -40,12 +41,10 @@ const membershipFormUrl = siteEntry.data.membershipFormUrl;
 ---
 
 <BaseLayout title="La French Tech Denver">
-  <section class="hero">
-    <div class="container">
-      <h1>La French Tech Denver</h1>
-      <p>Your tech rendez-vous with a French touch and mountain views</p>
-    </div>
-  </section>
+  <Hero
+    title="La French Tech Denver"
+    subtitle="Your tech rendez-vous with a French touch and mountain views"
+  />
 
   <div class="container">
     <div class="section card">

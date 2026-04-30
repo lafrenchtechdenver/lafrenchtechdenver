@@ -17,6 +17,7 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import Hero from '../components/Hero.astro';
 import BoardCard from '../components/BoardCard.astro';
 
 const board = (await getCollection('board')).sort(
@@ -28,15 +29,10 @@ const board = (await getCollection('board')).sort(
   title="About us — La French Tech Denver"
   description="About La French Tech Denver: our mission, values, and the volunteer board behind the community."
 >
-  <section class="hero">
-    <div class="container">
-      <h1>About La French Tech Denver</h1>
-      <p>
-        We are a curated support community helping entrepreneurs thrive through a strong
-        network and shared best practices.
-      </p>
-    </div>
-  </section>
+  <Hero
+    title="About La French Tech Denver"
+    subtitle="We are a curated support community helping entrepreneurs thrive through a strong network and shared best practices."
+  />
 
   <div class="container">
     <div class="grid grid-2">
