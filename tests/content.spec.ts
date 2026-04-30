@@ -99,10 +99,9 @@ test.describe('Content collections render correctly', () => {
     }
   });
 
-  // Sponsor partners (Techstars, Finmark) move from a placeholder page to a
-  // real page in Milestone 4 (`/companies-sponsors.html`). Skip-with-TODO so
-  // the assertion lives next to its siblings and is easy to flip on.
-  test.skip('companies-sponsors page shows the two sponsor partners (Milestone 4)', async ({
+  // Milestone 4 promotes /companies-sponsors.html from a placeholder to a
+  // real, content-driven page; the sponsor PartnerCards now render.
+  test('companies-sponsors page shows the two sponsor partners', async ({
     page,
   }) => {
     await page.goto('/companies-sponsors.html');
