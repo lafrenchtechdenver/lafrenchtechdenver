@@ -50,12 +50,11 @@ const partnersCollection = defineCollection({
 
 const kpisCollection = defineCollection({
   type: 'data',
-  schema: z.array(
-    z.object({
-      value: z.string().min(1),
-      label: z.string().min(1),
-    }),
-  ),
+  schema: z.object({
+    value: z.string().min(1),
+    label: z.string().min(1),
+    order: z.number().int().positive(),
+  }),
 });
 
 const siteCollection = defineCollection({
