@@ -3,17 +3,17 @@ import { expect, test } from '@playwright/test';
 /**
  * placeholder-pages.spec.ts — Placeholder page verification.
  *
- * For Milestone 1, five pages are placeholders with:
- * - A BaseLayout (shared header and footer).
- * - An <h1> with the page name.
- * - A "Coming soon" note.
+ * Originally Milestone 1 shipped six placeholder pages. Milestone 3 promotes
+ * `/about.html` from placeholder to a real, content-driven page (mission,
+ * values, and the full board grid sourced from the `board` content
+ * collection); its assertions live in `tests/content.spec.ts` now.
  *
- * These tests confirm nav links don't 404 and the pages are minimally correct.
- * They will be updated in later milestones when real content arrives.
+ * The pages still in this list remain placeholders until later milestones
+ * bring them online. Each one must render via BaseLayout, expose its own
+ * <h1>, and carry a "Coming soon" note so the nav link does not 404.
  */
 
 const PLACEHOLDER_PAGES: Array<{ url: string; h1: string }> = [
-  { url: '/about.html', h1: 'About us' },
   { url: '/companies-sponsors.html', h1: 'Companies & Sponsors' },
   { url: '/events.html', h1: 'Events' },
   { url: '/members-benefits.html', h1: 'Members Benefits' },

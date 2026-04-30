@@ -1,0 +1,17 @@
+---
+/**
+ * Renders one `.card.kpi` block — the headline number + caption shown on the
+ * home page. Sourced from the `kpis` data collection.
+ */
+interface Props {
+  value: string;
+  label: string;
+}
+
+const { value, label } = Astro.props;
+---
+
+<div class="card kpi" data-testid="kpi-card">
+  <div class="num">{value}</div>
+  <div class="label">{label}</div>
+</div>
