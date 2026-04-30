@@ -1,246 +1,566 @@
 /*
  * Global stylesheet for La French Tech Denver.
  *
- * Milestone 1 ports the legacy inline <style> block (previously duplicated
- * across all six HTML pages) into this single file. Tailwind directives are
- * declared at the top so utility classes are available, but the design tokens
- * and component patterns (.card, .cta, .hero, .kpi, .partner, ...) stay as
- * hand-written CSS for now. Milestone 2 will rewrite these against Tailwind
- * `@apply` utilities and `theme.extend.colors` design tokens.
+ * Milestone 2 layers the legacy hand-written CSS over a real Tailwind 4 design
+ * system: design tokens live as space-separated R G B triplets on `:root` and
+ * `[data-theme="dark"]` (so opacity utilities like `bg-primary/80` resolve via
+ * the `<alpha-value>` placeholder), Tailwind itself is wired through the Vite
+ * plugin via `@import 'tailwindcss'` + `@config`, and component patterns
+ * (`.card`, `.cta`, `.hero`, `.kpi`, `.partner`, `.board .person`, …) are kept
+ * as plain CSS in `@layer components` so designers tweaking brand colors don't
+ * have to learn `@apply`.
+ *
+ * Self-hosted variable fonts (Inter + Bricolage Grotesque) are imported at the
+ * top of this file so Astro/Vite hashes the woff2 subsets into `_astro/`. No
+ * Google Fonts request — the page is GDPR-clean.
+ *
+ * Accessibility baseline (skip-link, :focus-visible ring, prefers-reduced-motion
+ * guard, theme-aware hero overlay) is established here and inherited by every
+ * page that renders into `BaseLayout.astro`.
  */
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/bricolage-grotesque';
 
-:root {
-  --bg: #f7f7fb;
-  --card: #ffffff;
-  --text: #0f172a;
-  --muted: #475569;
-  --primary: #EF4135;
-  --primary-contrast: #ffffff;
-  --accent: #0055A4;
-  --ring: rgba(239, 65, 53, 0.2);
-  --shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
-  --border: #e5e7eb;
-  --nav-bg: rgba(255, 255, 255, 0.7);
-  --badge-bg: #fff;
-  --hero-gradient-1: rgba(0, 85, 164, 0.08);
-  --hero-gradient-2: rgba(239, 65, 53, 0.08);
-}
+@import 'tailwindcss';
+@config '../../tailwind.config.mjs';
 
-[data-theme='dark'] {
-  --bg: #0f172a;
-  --card: #1e293b;
-  --text: #f1f5f9;
-  --muted: #94a3b8;
-  --primary: #EF4135;
-  --primary-contrast: #ffffff;
-  --accent: #3b82f6;
-  --ring: rgba(239, 65, 53, 0.3);
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  --border: #334155;
-  --nav-bg: rgba(30, 41, 59, 0.8);
-  --badge-bg: #1e293b;
-  --hero-gradient-1: rgba(59, 130, 246, 0.12);
-  --hero-gradient-2: rgba(239, 65, 53, 0.12);
-}
+/*
+ * Align Tailwind 4's CSS-side `dark:` variant with the JS-config
+ * `darkMode: ['selector', '[data-theme="dark"]']`. Without this, hand-written
+ * `[data-theme='dark'] .foo` selectors and Tailwind `dark:bg-card` utilities
+ * would fire on different selectors and silently disagree.
+ */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
-* { box-sizing: border-box; }
-html,
-body { margin: 0; padding: 0; }
-body {
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
-  background: var(--bg) url('/pattern.svg') center/120px repeat;
-  color: var(--text);
-  line-height: 1.6;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-a { color: var(--primary); text-decoration: none; }
-a:hover { text-decoration: underline; }
-.container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+@layer base {
+  :root {
+    /* R G B triplets (no commas, no rgb() wrapper) so Tailwind's
+       `rgb(var(--token) / <alpha-value>)` bindings can substitute alpha. */
+    --bg: 247 247 251;
+    --card: 255 255 255;
+    --text: 15 23 42;
+    --muted: 71 85 105;
+    --primary: 239 65 53;
+    --primary-contrast: 255 255 255;
+    --accent: 0 85 164;
+    --border: 229 231 235;
+    --badge-bg: 255 255 255;
 
-.nav {
-  position: sticky; top: 0; z-index: 50;
-  background: var(--nav-bg);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-}
-.nav-inner { display: flex; align-items: center; gap: 20px; justify-content: space-between; flex-wrap: wrap; }
-.logo { display: flex; align-items: center; gap: 12px; font-weight: 700; }
-.logo-mark {
-  width: 14px; height: 14px; border-radius: 4px;
-  background: linear-gradient(135deg, var(--accent), var(--primary));
-  box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.15);
-}
-.menu { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
-.menu a {
-  padding: 10px 12px; border-radius: 12px;
-  transition: all 0.2s ease;
-}
-.menu a.active,
-.menu a:hover {
-  background: var(--card);
-  box-shadow: var(--shadow);
-}
-.theme-toggle {
-  padding: 8px 10px; border-radius: 8px; background: none; border: none;
-  cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 6px;
-  transition: all 0.2s ease; opacity: 0.6; color: var(--text);
-}
-.theme-toggle:hover {
-  background: var(--card);
-  opacity: 1;
-}
-[data-theme='dark'] .theme-toggle {
-  color: #f1f5f9;
-  opacity: 0.7;
-}
-.social-link {
-  padding: 8px 10px; border-radius: 8px; display: flex; align-items: center;
-  transition: all 0.2s ease; opacity: 0.6; color: var(--text);
-}
-.social-link:hover {
-  background: var(--card);
-  opacity: 1;
-}
-[data-theme='dark'] .social-link {
-  color: #f1f5f9;
-  opacity: 0.7;
-}
-.social-links {
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
-.burger {
-  display: none;
-  flex-direction: column;
-  gap: 4px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-}
-.burger span {
-  width: 24px;
-  height: 2px;
-  background: var(--text);
-  transition: all 0.3s ease;
-}
-.burger.active span:nth-child(1) {
-  transform: rotate(45deg) translate(4.25px, 4.25px);
-}
-.burger.active span:nth-child(2) {
-  opacity: 0;
-}
-.burger.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(4.25px, -4.25px);
-}
-@media (max-width: 900px) {
-  .burger { display: flex; }
-  .menu {
-    position: absolute;
-    top: 60px;
-    left: 0;
-    right: 0;
-    background: var(--card);
-    backdrop-filter: blur(10px);
-    flex-direction: column;
-    padding: 16px;
-    gap: 8px;
-    display: none;
-    box-shadow: var(--shadow);
-    border-bottom: 1px solid var(--border);
+    /* Composite tokens that cannot round-trip through the `<alpha-value>`
+       placeholder stay as raw strings. */
+    --ring: rgba(239, 65, 53, 0.2);
+    --shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+    --nav-bg: rgba(255, 255, 255, 0.7);
+    --hero-gradient-1: rgba(0, 85, 164, 0.08);
+    --hero-gradient-2: rgba(239, 65, 53, 0.08);
+    /* Theme-aware hero overlay scrim. Light theme: a pale white scrim that lifts
+       the legacy hero text against any photo crop while matching the page bg. */
+    --hero-overlay: linear-gradient(
+      180deg,
+      rgba(247, 247, 251, 0.55) 0%,
+      rgba(247, 247, 251, 0.35) 60%,
+      rgba(247, 247, 251, 0.7) 100%
+    );
   }
-  .menu.active { display: flex; }
-  .menu a:not(.social-link) { width: 100%; text-align: center; }
-  .menu .social-links { display: flex; justify-content: center; gap: 8px; }
-  .menu .theme-toggle { width: 100%; justify-content: center; margin-top: 8px; }
+
+  [data-theme='dark'] {
+    --bg: 15 23 42;
+    --card: 30 41 59;
+    --text: 241 245 249;
+    --muted: 148 163 184;
+    --primary: 239 65 53;
+    --primary-contrast: 255 255 255;
+    --accent: 59 130 246;
+    --border: 51 65 85;
+    --badge-bg: 30 41 59;
+
+    --ring: rgba(239, 65, 53, 0.3);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    --nav-bg: rgba(30, 41, 59, 0.8);
+    --hero-gradient-1: rgba(59, 130, 246, 0.12);
+    --hero-gradient-2: rgba(239, 65, 53, 0.12);
+    /* Dark theme: a darker scrim so light-on-photo text stays AA-contrasted. */
+    --hero-overlay: linear-gradient(
+      180deg,
+      rgba(15, 23, 42, 0.65) 0%,
+      rgba(15, 23, 42, 0.5) 60%,
+      rgba(15, 23, 42, 0.8) 100%
+    );
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family:
+      'Inter Variable',
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      Inter,
+      'Helvetica Neue',
+      Arial,
+      'Noto Sans',
+      'Liberation Sans',
+      sans-serif;
+    background: rgb(var(--bg)) url('/pattern.svg') center/120px repeat;
+    color: rgb(var(--text));
+    line-height: 1.6;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family:
+      'Bricolage Grotesque Variable',
+      'Inter Variable',
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      Roboto,
+      'Helvetica Neue',
+      Arial,
+      sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  a {
+    color: rgb(var(--primary));
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /*
+   * Single global focus ring covering every interactive affordance — `a`,
+   * `button`, `.cta`, `.theme-toggle`, `.social-link`, `.burger`, `.skip-link`.
+   * Browsers that honor `:focus-visible` suppress the ring on mouse-click focus
+   * and show it on keyboard Tab — exactly the desired UX. Don't override this
+   * per-component (see `project_wiki/architecture/accessibility.md`).
+   */
+  :focus-visible {
+    outline: 3px solid rgb(var(--primary));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /*
+   * Vestibular-sensitive users get a still page. Catches every `transition: ...`
+   * and `transform: ...` rule below (menu items, theme toggle, social links,
+   * cards, CTAs, burger 3-stripe animation, hero overlay fade) without needing
+   * per-component opt-in.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
-.hero {
-  background: url('/assets/hero.jpg') center 65%/cover no-repeat,
-              radial-gradient(1200px 400px at 10% -20%, var(--hero-gradient-1), transparent),
-              radial-gradient(800px 300px at 90% 0%, var(--hero-gradient-2), transparent);
-  padding: 72px 0 36px;
-  min-height: 280px;
-  display: flex;
-  align-items: center;
-}
-.hero h1 { font-size: clamp(28px, 5vw, 42px); margin: 0 0 8px; letter-spacing: -0.02em; color: #0f172a; }
-.hero p {
-  color: #0f172a; margin: 8px 0 0; max-width: 60ch;
-  background: rgba(255, 255, 255, 0.60);
-  padding: 8px 12px; border-radius: 6px; display: inline-block;
-}
+@layer components {
+  /*
+   * Skip-to-content link. Positioned offscreen until focused, then slides in.
+   * The link is rendered as the first interactive element in `BaseLayout.astro`,
+   * BEFORE `<Nav>`, so a keyboard user pressing Tab once lands on it and the
+   * Nav's outside-click handler does not capture clicks meant for the link.
+   */
+  .skip-link {
+    position: absolute;
+    top: -48px;
+    left: 8px;
+    z-index: 100;
+    padding: 10px 16px;
+    background: rgb(var(--primary));
+    color: rgb(var(--primary-contrast));
+    border-radius: 8px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: var(--shadow);
+    transition: top 0.2s ease;
+  }
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    top: 8px;
+    text-decoration: none;
+  }
 
-.grid { display: grid; gap: 32px; }
-.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-@media (max-width: 900px) {
-  .grid-3 { grid-template-columns: 1fr; }
-  .grid-2 { grid-template-columns: 1fr; }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--nav-bg);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgb(var(--border));
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+  }
+  .logo-mark {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, rgb(var(--accent)), rgb(var(--primary)));
+    box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .menu {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .menu a {
+    padding: 10px 12px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+  .menu a.active,
+  .menu a:hover {
+    background: rgb(var(--card));
+    box-shadow: var(--shadow);
+  }
+
+  .theme-toggle {
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+    color: rgb(var(--text));
+  }
+  .theme-toggle:hover {
+    background: rgb(var(--card));
+    opacity: 1;
+  }
+  [data-theme='dark'] .theme-toggle {
+    opacity: 0.7;
+  }
+
+  .social-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .social-link {
+    padding: 8px 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+    color: rgb(var(--text));
+  }
+  .social-link:hover {
+    background: rgb(var(--card));
+    opacity: 1;
+    text-decoration: none;
+  }
+  [data-theme='dark'] .social-link {
+    opacity: 0.7;
+  }
+
+  .burger {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+  }
+  .burger span {
+    width: 24px;
+    height: 2px;
+    background: rgb(var(--text));
+    transition: all 0.3s ease;
+  }
+  .burger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(4.25px, 4.25px);
+  }
+  .burger.active span:nth-child(2) {
+    opacity: 0;
+  }
+  .burger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(4.25px, -4.25px);
+  }
+
+  @media (max-width: 900px) {
+    .burger {
+      display: flex;
+    }
+    .menu {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background: rgb(var(--card));
+      backdrop-filter: blur(10px);
+      flex-direction: column;
+      padding: 16px;
+      gap: 8px;
+      display: none;
+      box-shadow: var(--shadow);
+      border-bottom: 1px solid rgb(var(--border));
+    }
+    .menu.active {
+      display: flex;
+    }
+    .menu a:not(.social-link) {
+      width: 100%;
+      text-align: center;
+    }
+    .menu .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    .menu .theme-toggle {
+      width: 100%;
+      justify-content: center;
+      margin-top: 8px;
+    }
+  }
+
+  /*
+   * Hero. Stack: hero photo at the bottom, theme-aware overlay scrim above it,
+   * radial-gradient brand color washes on top. Text uses `rgb(var(--text))` —
+   * NOT the legacy forced `#0f172a`, which produced near-black text on a dim
+   * photo for dark-mode users. The overlay guarantees AA contrast in both
+   * themes regardless of photo crop.
+   */
+  .hero {
+    background:
+      radial-gradient(1200px 400px at 10% -20%, var(--hero-gradient-1), transparent),
+      radial-gradient(800px 300px at 90% 0%, var(--hero-gradient-2), transparent),
+      var(--hero-overlay),
+      url('/assets/hero.jpg') center 65% / cover no-repeat;
+    padding: 72px 0 36px;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 42px);
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+    color: rgb(var(--text));
+  }
+  .hero p {
+    color: rgb(var(--text));
+    margin: 8px 0 0;
+    max-width: 60ch;
+    background: rgb(var(--card) / 0.7);
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  .grid {
+    display: grid;
+    gap: 32px;
+  }
+  .grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (max-width: 900px) {
+    .grid-3 {
+      grid-template-columns: 1fr;
+    }
+    .grid-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .card {
+    background: rgb(var(--card));
+    border: 1px solid rgb(var(--border));
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    transition:
+      background-color 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+  @media (max-width: 900px) {
+    .kpis {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .kpi .num {
+    font-size: 32px;
+    font-weight: 800;
+  }
+  .kpi .label {
+    color: rgb(var(--muted));
+  }
+
+  .section {
+    margin-top: 48px;
+  }
+  .section:first-child {
+    margin-top: 0;
+  }
+  .section h2 {
+    font-size: 24px;
+    letter-spacing: -0.01em;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgb(var(--badge-bg));
+    border: 1px solid rgb(var(--border));
+    color: rgb(var(--text));
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-weight: 600;
+  }
+
+  .cta {
+    display: inline-block;
+    background: rgb(var(--primary));
+    color: rgb(var(--primary-contrast));
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    box-shadow: 0 6px 16px var(--ring);
+    transition: all 0.2s ease;
+  }
+  .cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px var(--ring);
+    text-decoration: none;
+  }
+
+  .footer {
+    margin-top: 48px;
+    padding: 28px 0;
+    border-top: 1px solid rgb(var(--border));
+    color: rgb(var(--muted));
+    font-size: 14px;
+  }
+
+  .partner {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .partner img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 1px solid rgb(var(--border));
+    background: rgb(var(--card));
+    padding: 10px;
+  }
+  .partner h4 {
+    margin: 0;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+  @media (max-width: 900px) {
+    .board {
+      grid-template-columns: 1fr;
+    }
+  }
+  .board .person {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .board .person img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 12px;
+  }
+  .board .person h4 {
+    margin: 8px 0 4px;
+  }
+
+  .event {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .event .date {
+    text-align: center;
+  }
+  .event .date .month {
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .event .date .day {
+    font-size: 28px;
+    font-weight: 800;
+  }
+
+  .note {
+    font-size: 14px;
+    color: rgb(var(--muted));
+  }
 }
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  box-shadow: var(--shadow);
-  padding: 20px;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-@media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.kpi .num { font-size: 32px; font-weight: 800; }
-.kpi .label { color: var(--muted); }
-
-.section { margin-top: 48px; }
-.section:first-child { margin-top: 0; }
-.section h2 { font-size: 24px; letter-spacing: -0.01em; }
-
-.badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--badge-bg); border: 1px solid var(--border);
-  color: var(--text); border-radius: 999px; padding: 6px 12px; font-weight: 600;
-}
-
-.cta {
-  display: inline-block; background: var(--primary); color: var(--primary-contrast);
-  padding: 12px 16px; border-radius: 12px; font-weight: 700;
-  box-shadow: 0 6px 16px var(--ring);
-  transition: all 0.2s ease;
-}
-.cta:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px var(--ring);
-  text-decoration: none;
-}
-
-.footer {
-  margin-top: 48px; padding: 28px 0; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px;
-}
-
-.partner {
-  display: flex; gap: 14px; align-items: flex-start;
-}
-.partner img {
-  width: 120px; height: 120px; object-fit: contain; border-radius: 12px;
-  border: 1px solid var(--border); background: var(--card); padding: 10px;
-}
-.partner h4 { margin: 0; }
-
-.board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-@media (max-width: 900px) { .board { grid-template-columns: 1fr; } }
-.board .person { display: flex; flex-direction: column; align-items: center; text-align: center; }
-.board .person img { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; margin-bottom: 12px; }
-.board .person h4 { margin: 8px 0 4px; }
-
-.event { display: grid; grid-template-columns: 120px 1fr; gap: 16px; align-items: flex-start; }
-.event .date { text-align: center; }
-.event .date .month { font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
-.event .date .day { font-size: 28px; font-weight: 800; }
-
-.note { font-size: 14px; color: var(--muted); }
