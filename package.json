@@ -11,7 +11,8 @@
     "preview": "astro preview --host 127.0.0.1 --port 4321",
     "astro": "astro",
     "check": "astro check",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:a11y": "playwright test tests/a11y.spec.ts tests/a11y-basic.spec.ts"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -28,7 +29,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@axe-core/playwright": "^4.10.0",
     "@playwright/test": "^1.49.1",
+    "axe-core": "^4.10.0",
     "typescript": "^5.7.3"
   }
 }

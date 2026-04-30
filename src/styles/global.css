@@ -52,6 +52,16 @@
     --muted: 71 85 105;
     --primary: 239 65 53;
     --primary-contrast: 255 255 255;
+    /*
+     * `--primary-strong` is a slightly darker shade of `--primary` used as the
+     * background for white-on-red surfaces (`.cta`, `.skip-link`) where WCAG
+     * 2.2 AA requires ≥ 4.5:1 contrast. The brand red `#EF4135` only reaches
+     * ~3.87:1 against white; `#C72F24` reaches ~5.4:1 while staying
+     * recognisably "French Tech red." `--primary` is preserved unchanged for
+     * accent borders, focus rings, and hero gradients (Milestone 2 tests
+     * pin its exact value).
+     */
+    --primary-strong: 199 47 36;
     --accent: 0 85 164;
     --border: 229 231 235;
     --badge-bg: 255 255 255;
@@ -76,6 +86,10 @@
     --muted: 148 163 184;
     --primary: 239 65 53;
     --primary-contrast: 255 255 255;
+    /* Same reasoning as light mode — the `--primary-strong` shade is used as
+     * the AA-compliant button background. White on `#C72F24` reaches ~5.4:1,
+     * which is comfortable on both light and dark backgrounds. */
+    --primary-strong: 199 47 36;
     --accent: 59 130 246;
     --border: 51 65 85;
     --badge-bg: 30 41 59;
@@ -176,7 +190,9 @@
     left: 8px;
     z-index: 100;
     padding: 8px 16px;
-    background: rgb(var(--primary));
+    /* Uses `--primary-strong` for WCAG 2.2 AA contrast — see token comment in
+     * the design-tokens block above. */
+    background: rgb(var(--primary-strong));
     color: rgb(var(--primary-contrast));
     font-weight: 700;
     border-radius: 8px;
@@ -506,7 +522,9 @@
   /* ---- Call-to-action button ------------------------------------------- */
   .cta {
     display: inline-block;
-    background: rgb(var(--primary));
+    /* Uses `--primary-strong` for WCAG 2.2 AA contrast — see token comment
+     * in the design-tokens block above. */
+    background: rgb(var(--primary-strong));
     color: rgb(var(--primary-contrast));
     padding: 12px 16px;
     border-radius: 12px;
@@ -546,6 +564,13 @@
   }
   .partner h4 {
     margin: 0;
+    /* The PartnerCard wraps its content in an `<a>`, and the global `a { color }`
+     * rule resolves to `rgb(var(--primary))` — French Tech red. Inheriting that
+     * color on the partner name gives ~3.87:1 contrast on the white card and
+     * ~3.10:1 on the dark card, both below WCAG 2.2 AA's 4.5:1 floor. Force
+     * the heading back to the theme's text color so the partner name reads
+     * cleanly in both themes. The tagline already uses `--muted`. */
+    color: rgb(var(--text));
   }
 
   .board {
