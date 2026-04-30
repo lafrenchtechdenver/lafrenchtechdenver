@@ -66,7 +66,7 @@ function isActive(href: string): boolean {
       />
       <span>La French Tech Denver</span>
     </div>
-    <button class="burger" type="button" aria-label="Toggle menu" id="burger-button">
+    <button class="burger" type="button" aria-label="Toggle menu" id="burger-button" aria-controls="menu" aria-expanded="false">
       <span></span>
       <span></span>
       <span></span>
@@ -96,6 +96,8 @@ function isActive(href: string): boolean {
     function toggleMenu() {
       menu.classList.toggle('active');
       burger.classList.toggle('active');
+      const expanded = menu.classList.contains('active');
+      burger.setAttribute('aria-expanded', String(expanded));
     }
 
     burger.addEventListener('click', function (event) {
@@ -109,6 +111,7 @@ function isActive(href: string): boolean {
       if (nav && !nav.contains(event.target)) {
         menu.classList.remove('active');
         burger.classList.remove('active');
+        burger.setAttribute('aria-expanded', 'false');
       }
     });
   })();
