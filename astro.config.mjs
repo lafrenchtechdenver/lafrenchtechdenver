@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
+import sitemap from '@astrojs/sitemap';
+import tailwindcss from '@tailwindcss/vite';
 
 // The canonical production URL. Used by Astro for absolute-URL generation
 // (OpenGraph, sitemap, canonical links). Must match the value in `public/CNAME`.
@@ -14,12 +15,38 @@ export default defineConfig({
     format: 'file',
   },
   integrations: [
-    tailwind({
-      // We import our own base stylesheet (`src/styles/global.css`) from BaseLayout
-      // so it also carries the French Tech design tokens + @layer base port of the
-      // legacy inline CSS. Disabling the integration's automatic base injection keeps
-      // a single entry point for all global styles.
-      applyBaseStyles: false,
+    sitemap({
+      // The default @astrojs/sitemap behavior strips the `.html` suffix produced by
+      // `build.format: 'file'` (a known upstream bug). The contract for this site is
+      // that *every* URL ends in `.html` (see `project_wiki/architecture/url-preservation.md`).
+      // The serialize() override re-appends `.html` so the sitemap stays in sync with the
+      // canonical URLs. Treat this as load-bearing alongside `build.format: 'file'`.
+      serialize(item) {
+        try {
+          const url = new URL(item.url);
+          // Bare-domain root → /index.html
+          if (url.pathname === '' || url.pathname === '/') {
+            url.pathname = '/index.html';
+          } else if (!url.pathname.endsWith('.html')) {
+            url.pathname = `${url.pathname.replace(/\/$/, '')}.html`;
+          }
+          item.url = url.toString();
+        } catch {
+          // If URL parsing fails for any reason, fall back to the raw item — but
+          // the contract is still: the entry must end in `.html`.
+          if (typeof item.url === 'string' && !item.url.endsWith('.html')) {
+            if (item.url.endsWith('/')) {
+              item.url = `${item.url}index.html`;
+            } else {
+              item.url = `${item.url}.html`;
+            }
+          }
+        }
+        return item;
+      },
     }),
   ],
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });
