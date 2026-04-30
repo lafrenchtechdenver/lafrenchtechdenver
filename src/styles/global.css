@@ -99,11 +99,7 @@
     --nav-bg: rgba(30, 41, 59, 0.8);
     --hero-gradient-1: rgba(59, 130, 246, 0.12);
     --hero-gradient-2: rgba(239, 65, 53, 0.12);
-    --hero-overlay: linear-gradient(
-      180deg,
-      rgba(15, 23, 42, 0.55) 0%,
-      rgba(15, 23, 42, 0.7) 100%
-    );
+    --hero-overlay: linear-gradient(180deg, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.7) 100%);
   }
 
   * {
@@ -120,8 +116,7 @@
     /* `font-sans` resolves to the Inter Variable + system-ui fallback chain
      * declared in tailwind.config.mjs. */
     @apply font-sans antialiased;
-    background:
-      rgb(var(--bg)) url('/pattern.svg') center/120px repeat;
+    background: rgb(var(--bg)) url('/pattern.svg') center/120px repeat;
     color: rgb(var(--text));
     line-height: 1.6;
     transition:
@@ -150,11 +145,15 @@
   }
 
   /* WCAG 2.2 AA focus ring on every interactive affordance. The legacy
-   * stylesheet had none — Tab keypresses produced no visible focus. */
+   * stylesheet had none — Tab keypresses produced no visible focus.
+   *
+   * IMPORTANT: This rule MUST set outline + outline-offset only — adding
+   * `border-radius` here would silently shrink the rendered corners of every
+   * focused rounded affordance (.cta, .menu a, .theme-toggle, .skip-link).
+   * See `/l2l/mcode/instructions/no_border-radius_in_focus-visible_rule.md`. */
   :focus-visible {
     outline: 3px solid rgb(var(--primary));
     outline-offset: 2px;
-    border-radius: 4px;
   }
 
   /* Respect users who set `prefers-reduced-motion`. The site uses several
@@ -231,11 +230,7 @@
     width: 14px;
     height: 14px;
     border-radius: 4px;
-    background: linear-gradient(
-      135deg,
-      rgb(var(--accent)),
-      rgb(var(--primary))
-    );
+    background: linear-gradient(135deg, rgb(var(--accent)), rgb(var(--primary)));
     box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.15);
   }
 
@@ -412,16 +407,8 @@
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(
-        1200px 400px at 10% -20%,
-        var(--hero-gradient-1),
-        transparent
-      ),
-      radial-gradient(
-        800px 300px at 90% 0%,
-        var(--hero-gradient-2),
-        transparent
-      );
+      radial-gradient(1200px 400px at 10% -20%, var(--hero-gradient-1), transparent),
+      radial-gradient(800px 300px at 90% 0%, var(--hero-gradient-2), transparent);
     z-index: -1;
     pointer-events: none;
   }

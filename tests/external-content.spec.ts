@@ -65,9 +65,7 @@ test.describe('External content — site collection wiring', () => {
     await expect(cta).toContainText('Become a Member');
   });
 
-  test('members-benefits page CTA href matches site.json membershipFormUrl', async ({
-    page,
-  }) => {
+  test('members-benefits page CTA href matches site.json membershipFormUrl', async ({ page }) => {
     await page.goto('/members-benefits.html');
 
     const cta = page.locator(`a.cta[href="${site.membershipFormUrl}"]`);

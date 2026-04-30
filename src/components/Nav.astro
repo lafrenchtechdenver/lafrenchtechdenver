@@ -45,7 +45,8 @@ function isActive(href: string): boolean {
 <header class="nav">
   <div class="container nav-inner">
     <div class="logo">
-      {/*
+      {
+        /*
         Intentional raw <img>. The brand mark is also the canonical OpenGraph
         / Twitter card image referenced by the absolute URL
         `https://lafrenchtechdenver.com/assets/logos/Logo_FT_Denver.png` in
@@ -54,7 +55,8 @@ function isActive(href: string): boolean {
         and break every social-share preview pointing at the stable URL — so
         the file is kept under `public/assets/logos/` and rendered here as a
         small (51 KB) static asset. Documented in `MILESTONE.md` ("Risks").
-      */}
+      */
+      }
       <img
         src="/assets/logos/Logo_FT_Denver.png"
         alt="La French Tech Denver logo"
@@ -70,11 +72,13 @@ function isActive(href: string): boolean {
       <span></span>
     </button>
     <nav class="menu" id="menu">
-      {menuItems.map((item) => (
-        <a href={item.href} class={isActive(item.href) ? 'active' : ''}>
-          {item.label}
-        </a>
-      ))}
+      {
+        menuItems.map((item) => (
+          <a href={item.href} class={isActive(item.href) ? 'active' : ''}>
+            {item.label}
+          </a>
+        ))
+      }
       <SocialLinks />
       <ThemeToggle />
     </nav>

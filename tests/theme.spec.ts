@@ -19,9 +19,7 @@ test.describe('Theme Toggle', () => {
     await page.evaluate(() => localStorage.removeItem('theme'));
     await page.reload();
 
-    const theme = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
-    );
+    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(theme).toBe('light');
   });
 
@@ -32,9 +30,7 @@ test.describe('Theme Toggle', () => {
 
     await page.click('#theme-toggle');
 
-    const theme = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
-    );
+    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(theme).toBe('dark');
   });
 
@@ -46,9 +42,7 @@ test.describe('Theme Toggle', () => {
     await page.click('#theme-toggle');
     await page.click('#theme-toggle');
 
-    const theme = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
-    );
+    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(theme).toBe('light');
   });
 
@@ -74,9 +68,7 @@ test.describe('Theme Toggle', () => {
     // Reload — the inline <head> script should restore "dark" before body renders.
     await page.reload();
 
-    const theme = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
-    );
+    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(theme).toBe('dark');
   });
 
@@ -86,9 +78,7 @@ test.describe('Theme Toggle', () => {
     await page.evaluate(() => localStorage.setItem('theme', 'light'));
     await page.reload();
 
-    const theme = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
-    );
+    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(theme).toBe('light');
   });
 

@@ -110,9 +110,7 @@ test.describe('No FOUC (Flash of Unstyled Theme)', () => {
     await page.reload();
 
     // After reload the attribute must already be present.
-    const theme = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
-    );
+    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(theme).toBe('dark');
   });
 });
@@ -138,10 +136,7 @@ test.describe('Self-hosted fonts', () => {
   test('no Google Fonts requests are made during page load', async ({ page }) => {
     const googleFontRequests: string[] = [];
     page.on('request', (req) => {
-      if (
-        req.url().includes('fonts.googleapis.com') ||
-        req.url().includes('fonts.gstatic.com')
-      ) {
+      if (req.url().includes('fonts.googleapis.com') || req.url().includes('fonts.gstatic.com')) {
         googleFontRequests.push(req.url());
       }
     });
@@ -176,9 +171,7 @@ test.describe('Self-hosted fonts', () => {
     expect(hasInterFontFace).toBe(true);
   });
 
-  test('Bricolage Grotesque Variable font-face is declared in the stylesheet', async ({
-    page,
-  }) => {
+  test('Bricolage Grotesque Variable font-face is declared in the stylesheet', async ({ page }) => {
     await page.goto('/');
 
     const hasBricolageFont = await page.evaluate(() => {
@@ -409,7 +402,7 @@ test.describe('Nav active state', () => {
     });
   }
 
-  for (const { url, activeHref } of PAGE_ACTIVE_PAIRS) {
+  for (const { url } of PAGE_ACTIVE_PAIRS) {
     test(`${url}: only one nav link is active at a time`, async ({ page }) => {
       await page.goto(url);
       const activeLinks = page.locator('#menu a.active');
@@ -471,9 +464,7 @@ test.describe('Sitemap and robots.txt', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 test.describe('prefers-reduced-motion', () => {
-  test('transition-duration is near-zero when prefers-reduced-motion: reduce', async ({
-    page,
-  }) => {
+  test('transition-duration is near-zero when prefers-reduced-motion: reduce', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
 
@@ -495,13 +486,17 @@ test.describe('Social links on all pages', () => {
   for (const { url } of ALL_PAGES) {
     test(`LinkedIn link present on ${url}`, async ({ page }) => {
       await page.goto(url);
-      const linkedin = page.locator('a[href="https://www.linkedin.com/company/denver-french-tech"]');
+      const linkedin = page.locator(
+        'a[href="https://www.linkedin.com/company/denver-french-tech"]',
+      );
       await expect(linkedin).toBeVisible();
     });
 
     test(`Facebook link present on ${url}`, async ({ page }) => {
       await page.goto(url);
-      const facebook = page.locator('a[href="https://www.facebook.com/groups/lafrenchtechdenver/"]');
+      const facebook = page.locator(
+        'a[href="https://www.facebook.com/groups/lafrenchtechdenver/"]',
+      );
       await expect(facebook).toBeVisible();
     });
 

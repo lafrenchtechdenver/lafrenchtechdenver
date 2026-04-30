@@ -19,9 +19,7 @@ import PartnerCard from '../components/PartnerCard.astro';
 // KPIs: 4 separate entries under `src/content/kpis/*.json`. Sort by the
 // `order` field so the displayed sequence is deterministic regardless of
 // filesystem iteration order.
-const kpis = (await getCollection('kpis')).sort(
-  (a, b) => a.data.order - b.data.order,
-);
+const kpis = (await getCollection('kpis')).sort((a, b) => a.data.order - b.data.order);
 
 // Partners flagged for the home page via `featuredOn: ['home', ...]` in
 // frontmatter. The same collection drives the sponsor grid on
@@ -51,33 +49,31 @@ const membershipFormUrl = siteEntry.data.membershipFormUrl;
       <h2>What is La French Tech Denver</h2>
       <p>
         French Tech Community Denver connects founders, tech talent, VCs, corporates and public
-        partners between France and Colorado — to accelerate growth with a focus on positive
-        social and environmental impact.
+        partners between France and Colorado — to accelerate growth with a focus on positive social
+        and environmental impact.
       </p>
       <p style="margin-top: 24px;">
-        <a class="cta" href={membershipFormUrl} target="_blank" rel="noopener">
-          Become a Member
-        </a>
+        <a class="cta" href={membershipFormUrl} target="_blank" rel="noopener"> Become a Member </a>
       </p>
     </div>
 
     <div class="section kpis">
-      {kpis.map((kpi) => (
-        <KpiCard value={kpi.data.value} label={kpi.data.label} />
-      ))}
+      {kpis.map((kpi) => <KpiCard value={kpi.data.value} label={kpi.data.label} />)}
     </div>
 
     <div class="section card">
       <h2>Friends & Partners</h2>
       <div class="grid grid-3">
-        {homePartners.map((partner) => (
-          <PartnerCard
-            name={partner.data.name}
-            tagline={partner.data.tagline}
-            url={partner.data.url}
-            logo={partner.data.logo}
-          />
-        ))}
+        {
+          homePartners.map((partner) => (
+            <PartnerCard
+              name={partner.data.name}
+              tagline={partner.data.tagline}
+              url={partner.data.url}
+              logo={partner.data.logo}
+            />
+          ))
+        }
       </div>
     </div>
   </div>

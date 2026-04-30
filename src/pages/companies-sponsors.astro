@@ -25,9 +25,7 @@ import PartnerCard from '../components/PartnerCard.astro';
 // alphabetically by name so the rendered order is deterministic and stable
 // across operating systems (filesystem iteration order is not guaranteed).
 const sponsorPartners = (
-  await getCollection('partners', (entry) =>
-    entry.data.featuredOn.includes('sponsors'),
-  )
+  await getCollection('partners', (entry) => entry.data.featuredOn.includes('sponsors'))
 ).sort((a, b) => a.data.name.localeCompare(b.data.name));
 
 // Preserved as an HTML comment in the rendered output so the legacy
@@ -58,19 +56,21 @@ const supportersPlaceholder = `<!--
     <div class="section card">
       <h2>Friends</h2>
       <p>
-        We are grateful to the companies that share our mission of bringing the French
-        and Colorado tech communities closer together. They sponsor our gatherings,
-        host our events, and back the founders we connect.
+        We are grateful to the companies that share our mission of bringing the French and Colorado
+        tech communities closer together. They sponsor our gatherings, host our events, and back the
+        founders we connect.
       </p>
       <div class="grid grid-3">
-        {sponsorPartners.map((partner) => (
-          <PartnerCard
-            name={partner.data.name}
-            tagline={partner.data.tagline}
-            url={partner.data.url}
-            logo={partner.data.logo}
-          />
-        ))}
+        {
+          sponsorPartners.map((partner) => (
+            <PartnerCard
+              name={partner.data.name}
+              tagline={partner.data.tagline}
+              url={partner.data.url}
+              logo={partner.data.logo}
+            />
+          ))
+        }
       </div>
     </div>
 

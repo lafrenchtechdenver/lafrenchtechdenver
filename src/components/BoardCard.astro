@@ -26,9 +26,7 @@ interface Props {
 
 const { name, role, photo, grayscale = true } = Astro.props;
 
-const personClass = ['card', 'person', grayscale ? 'is-grayscale' : '']
-  .filter(Boolean)
-  .join(' ');
+const personClass = ['card', 'person', grayscale ? 'is-grayscale' : ''].filter(Boolean).join(' ');
 ---
 
 <div class={personClass} data-testid="board-card">
