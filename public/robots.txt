@@ -1,0 +1,6 @@
+# La French Tech Denver — public brochure site.
+# Crawl freely; the sitemap is generated at build time by @astrojs/sitemap.
+User-agent: *
+Allow: /
+
+Sitemap: https://lafrenchtechdenver.com/sitemap-index.xml
