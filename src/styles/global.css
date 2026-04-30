@@ -100,26 +100,13 @@
   }
 
   body {
-    font-family:
-      'Inter Variable',
-      system-ui,
-      -apple-system,
-      'Segoe UI',
-      Roboto,
-      Inter,
-      'Helvetica Neue',
-      Arial,
-      'Noto Sans',
-      'Liberation Sans',
-      sans-serif;
+    @apply font-sans antialiased;
     background: rgb(var(--bg)) url('/pattern.svg') center/120px repeat;
     color: rgb(var(--text));
     line-height: 1.6;
     transition:
       background-color 0.3s ease,
       color 0.3s ease;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
   h1,
@@ -128,16 +115,7 @@
   h4,
   h5,
   h6 {
-    font-family:
-      'Bricolage Grotesque Variable',
-      'Inter Variable',
-      system-ui,
-      -apple-system,
-      'Segoe UI',
-      Roboto,
-      'Helvetica Neue',
-      Arial,
-      sans-serif;
+    @apply font-display;
     letter-spacing: -0.01em;
   }
 
@@ -155,11 +133,16 @@
    * Browsers that honor `:focus-visible` suppress the ring on mouse-click focus
    * and show it on keyboard Tab — exactly the desired UX. Don't override this
    * per-component (see `project_wiki/architecture/accessibility.md`).
+   *
+   * Note: we deliberately do NOT set `border-radius` here. `border-radius`
+   * applies to the element, not the outline, so any value here would silently
+   * shrink the visual corners of `.cta` (12px), `.menu a` (12px),
+   * `.theme-toggle` (8px), etc. while focused. The 2px outline-offset gives
+   * the ring a small breathing room around the existing corner radius.
    */
   :focus-visible {
     outline: 3px solid rgb(var(--primary));
     outline-offset: 2px;
-    border-radius: 4px;
   }
 
   /*
@@ -201,10 +184,14 @@
     box-shadow: var(--shadow);
     transition: top 0.2s ease;
   }
+  .skip-link:hover,
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    text-decoration: none;
+  }
   .skip-link:focus,
   .skip-link:focus-visible {
     top: 8px;
-    text-decoration: none;
   }
 
   .container {
@@ -374,30 +361,25 @@
    * themes regardless of photo crop.
    */
   .hero {
+    @apply flex items-center min-h-[280px];
     background:
       radial-gradient(1200px 400px at 10% -20%, var(--hero-gradient-1), transparent),
       radial-gradient(800px 300px at 90% 0%, var(--hero-gradient-2), transparent),
       var(--hero-overlay),
       url('/assets/hero.jpg') center 65% / cover no-repeat;
     padding: 72px 0 36px;
-    min-height: 280px;
-    display: flex;
-    align-items: center;
   }
   .hero h1 {
+    @apply m-0 mb-2;
     font-size: clamp(28px, 5vw, 42px);
-    margin: 0 0 8px;
     letter-spacing: -0.02em;
     color: rgb(var(--text));
   }
   .hero p {
+    @apply inline-block max-w-[60ch] rounded-md mt-2;
     color: rgb(var(--text));
-    margin: 8px 0 0;
-    max-width: 60ch;
     background: rgb(var(--card) / 0.7);
     padding: 8px 12px;
-    border-radius: 6px;
-    display: inline-block;
   }
 
   .grid {
@@ -420,20 +402,18 @@
   }
 
   .card {
+    @apply rounded-2xl p-5;
     background: rgb(var(--card));
     border: 1px solid rgb(var(--border));
-    border-radius: 18px;
     box-shadow: var(--shadow);
-    padding: 20px;
     transition:
       background-color 0.3s ease,
       border-color 0.3s ease;
   }
 
   .kpis {
-    display: grid;
+    @apply grid gap-4;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
   }
   @media (max-width: 900px) {
     .kpis {
@@ -441,8 +421,7 @@
     }
   }
   .kpi .num {
-    font-size: 32px;
-    font-weight: 800;
+    @apply text-3xl font-extrabold;
   }
   .kpi .label {
     color: rgb(var(--muted));
@@ -472,19 +451,17 @@
   }
 
   .cta {
-    display: inline-block;
+    @apply inline-block rounded-xl font-bold;
     background: rgb(var(--primary));
     color: rgb(var(--primary-contrast));
     padding: 12px 16px;
-    border-radius: 12px;
-    font-weight: 700;
     box-shadow: 0 6px 16px var(--ring);
     transition: all 0.2s ease;
   }
   .cta:hover {
+    @apply no-underline;
     transform: translateY(-1px);
     box-shadow: 0 10px 22px var(--ring);
-    text-decoration: none;
   }
 
   .footer {
@@ -496,27 +473,20 @@
   }
 
   .partner {
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
+    @apply flex gap-3.5 items-start;
   }
   .partner img {
-    width: 120px;
-    height: 120px;
-    object-fit: contain;
-    border-radius: 12px;
+    @apply w-[120px] h-[120px] object-contain rounded-xl p-2.5;
     border: 1px solid rgb(var(--border));
     background: rgb(var(--card));
-    padding: 10px;
   }
   .partner h4 {
-    margin: 0;
+    @apply m-0;
   }
 
   .board {
-    display: grid;
+    @apply grid gap-4;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
   }
   @media (max-width: 900px) {
     .board {
@@ -524,43 +494,32 @@
     }
   }
   .board .person {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    @apply flex flex-col items-center text-center;
   }
   .board .person img {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 50%;
-    margin-bottom: 12px;
+    @apply w-[120px] h-[120px] object-cover rounded-full mb-3;
   }
   .board .person h4 {
-    margin: 8px 0 4px;
+    @apply mt-2 mb-1;
   }
 
   .event {
-    display: grid;
+    @apply grid gap-4 items-start;
     grid-template-columns: 120px 1fr;
-    gap: 16px;
-    align-items: flex-start;
   }
   .event .date {
-    text-align: center;
+    @apply text-center;
   }
   .event .date .month {
-    font-weight: 800;
+    @apply font-extrabold uppercase;
     letter-spacing: 0.12em;
-    text-transform: uppercase;
   }
   .event .date .day {
-    font-size: 28px;
-    font-weight: 800;
+    @apply text-3xl font-extrabold;
   }
 
   .note {
-    font-size: 14px;
+    @apply text-sm;
     color: rgb(var(--muted));
   }
 }

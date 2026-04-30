@@ -69,21 +69,25 @@ test.describe('Mobile Menu', () => {
     await page.click('.burger');
     await expect(page.locator('#menu')).toHaveClass(/active/);
 
-    // Simulate a click on the document outside the nav by dispatching a click
-    // event directly on the document body. At mobile viewport the expanded menu
-    // can cover the visible area, so we use dispatchEvent to target a point
-    // that is guaranteed to be outside the .nav element.
-    await page.evaluate(() => {
-      // Dispatch a native click event at a point outside the nav element.
-      // The Nav.astro outside-click handler checks `!nav.contains(event.target)`.
-      const heroHeading = document.querySelector('.hero h1') as HTMLElement | null;
-      if (heroHeading) {
-        heroHeading.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-      } else {
-        // Fallback: dispatch on the body itself (also outside .nav).
-        document.body.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-      }
+    // Find a coordinate that is provably outside .nav at this viewport. The
+    // mobile menu drops down absolutely positioned under the sticky nav, so we
+    // pick a point below the menu (and below the hero heading) that no part
+    // of .nav covers, and click there with the real Playwright mouse so the
+    // hit-testing, listener-capture, and default-action chain matches a real
+    // user click.
+    const target = await page.evaluate(() => {
+      // Compute the bottom edge of the open .nav (header + dropdown menu).
+      const nav = document.querySelector('.nav') as HTMLElement | null;
+      const menu = document.getElementById('menu') as HTMLElement | null;
+      const header = nav?.getBoundingClientRect();
+      const menuRect = menu?.getBoundingClientRect();
+      const navBottom = Math.max(header?.bottom ?? 0, menuRect?.bottom ?? 0);
+      // Pick a point well below .nav's bottom and inside the viewport.
+      const x = Math.max(10, Math.floor(window.innerWidth / 2));
+      const y = Math.min(window.innerHeight - 10, Math.floor(navBottom) + 40);
+      return { x, y };
     });
+    await page.mouse.click(target.x, target.y);
 
     await expect(page.locator('#menu')).not.toHaveClass(/active/);
   });
