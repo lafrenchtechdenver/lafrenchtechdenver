@@ -582,6 +582,38 @@
     margin: 8px 0 4px;
   }
 
+  /* ---- Events page Luma iframe wrapper --------------------------------- */
+  /*
+   * Responsive container for the Luma calendar embed on `/events.html`.
+   * The legacy site shipped a fixed 600 px iframe that horizontal-scrolled
+   * below 768 px. We swap to an aspect-ratio container that scales with the
+   * viewport: ~3:4 on mobile (taller, gives the calendar room) and ~16:10
+   * on desktop. The iframe fills its parent absolutely so it never paints
+   * its own scrollbar.
+   */
+  .events-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    margin-top: 16px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgb(var(--border));
+    background: rgb(var(--card));
+  }
+  @media (min-width: 900px) {
+    .events-frame {
+      aspect-ratio: 16 / 10;
+    }
+  }
+  .events-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
   .event {
     display: grid;
     grid-template-columns: 120px 1fr;
