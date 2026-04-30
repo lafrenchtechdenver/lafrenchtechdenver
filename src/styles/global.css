@@ -538,6 +538,13 @@
     border-radius: 50%;
     margin-bottom: 12px;
   }
+  /* Per-member grayscale flag, driven by the `grayscale` boolean in
+   * `src/content/board/*.md`. Replaces the legacy inline
+   * `style="filter: grayscale(100%)"` attributes carried over from
+   * `about.html`. */
+  .board .person.is-grayscale img {
+    filter: grayscale(100%);
+  }
   .board .person h4 {
     margin: 8px 0 4px;
   }

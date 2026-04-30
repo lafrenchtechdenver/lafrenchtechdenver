@@ -1,0 +1,36 @@
+---
+/**
+ * Renders one board member as a `.card.person` block.
+ *
+ * Replaces the hand-coded `<div class="card person">…</div>` blocks that lived
+ * in the legacy `about.html`. The grayscale treatment is now expressed via the
+ * `is-grayscale` CSS class (declared in `src/styles/global.css`) instead of an
+ * inline `style="filter: grayscale(100%)"` attribute, so the rule is themable
+ * and easier to disable per-member via the `grayscale` frontmatter flag.
+ *
+ * Milestone 3 keeps the photo as a raw `<img src>` — typed `ImageMetadata`
+ * carries a resolved `.src` URL we can hand to the legacy markup. Milestone 4
+ * swaps this for Astro's `<Image>` to enable the Sharp pipeline; the props
+ * shape stays the same.
+ */
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  name: string;
+  role: string;
+  photo: ImageMetadata;
+  grayscale?: boolean;
+}
+
+const { name, role, photo, grayscale = true } = Astro.props;
+
+const personClass = ['card', 'person', grayscale ? 'is-grayscale' : '']
+  .filter(Boolean)
+  .join(' ');
+---
+
+<div class={personClass} data-testid="board-card">
+  <img src={photo.src} alt={name} width={photo.width} height={photo.height} />
+  <h4>{name}</h4>
+  <div class="note">{role}</div>
+</div>
