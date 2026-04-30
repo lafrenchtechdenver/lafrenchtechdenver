@@ -1,75 +1,42 @@
 ---
 /**
- * Home page: hero, "What is La French Tech Denver" + Google Form CTA,
- * 4 KPIs, and 6 Friends & Partners.
+ * Home page — hero, "What is La French Tech Denver" + Google Form CTA,
+ * 4 KPI cards, and 6 home-featured Friends & Partners.
  *
- * Milestone 1 keeps the content inline. Milestone 3 migrates the KPI and
- * partner lists into `src/content/*` collections; the structure of this
- * page will stay roughly the same — the inline arrays below will be
- * replaced with `await getCollection('kpis')` / `getCollection('partners')`.
+ * Milestone 3 replaces the inline `kpis` and `partners` arrays from Milestone 1
+ * with `getCollection(...)` calls against the new content collections, and
+ * pulls the membership form URL from the `site` data collection so the URL
+ * lives in exactly one file (`src/content/site/social.json`) rather than being
+ * hard-coded on the page. Each KPI/partner is rendered through its dedicated
+ * component (`KpiCard.astro`, `PartnerCard.astro`).
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection, getEntry } from 'astro:content';
+import KpiCard from '../components/KpiCard.astro';
+import PartnerCard from '../components/PartnerCard.astro';
 
-const kpis: Array<{ value: string; label: string }> = [
-  { value: '13', label: 'Companies' },
-  { value: '262', label: 'People' },
-  { value: '5', label: 'Nationalities' },
-  { value: '33%', label: 'Women' },
-];
+// KPIs: 4 separate entries under `src/content/kpis/*.json`. Sort by the
+// `order` field so the displayed sequence is deterministic regardless of
+// filesystem iteration order.
+const kpis = (await getCollection('kpis')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
 
-const partners: Array<{
-  name: string;
-  tagline: string;
-  url: string;
-  logo: string;
-  alt: string;
-}> = [
-  {
-    name: 'Superteam',
-    tagline: 'Marketing & Events',
-    url: 'https://superteam.ca',
-    logo: '/assets/logos/superteam-canada.jpeg',
-    alt: 'Superteam logo',
-  },
-  {
-    name: 'Modelcode.ai',
-    tagline: 'Software & AI',
-    url: 'https://modelcode.ai',
-    logo: '/assets/logos/modelcode-ai.jpg',
-    alt: 'Modelcode.ai logo',
-  },
-  {
-    name: 'Mad Science of Colorado',
-    tagline: 'STEM Education',
-    url: 'https://colorado.madscience.org',
-    logo: '/assets/logos/mad-science-of-colorado.jpeg',
-    alt: 'Mad Science of Colorado logo',
-  },
-  {
-    name: 'Ridiculous Engineering',
-    tagline: 'Engineering & Operations',
-    url: 'https://ridiculousengineering.com',
-    logo: '/assets/logos/ridiculous-engineering.jpeg',
-    alt: 'Ridiculous Engineering logo',
-  },
-  {
-    name: 'Einride',
-    tagline: 'Autonomous Tech',
-    url: 'https://einride.tech',
-    logo: '/assets/logos/einride.jpeg',
-    alt: 'Einride logo',
-  },
-  {
-    name: 'Extern',
-    tagline: 'Customer Success',
-    url: 'https://www.extern.com',
-    logo: '/assets/logos/externhq.jpeg',
-    alt: 'Extern logo',
-  },
-];
+// Partners flagged for the home page via `featuredOn: ['home', ...]` in
+// frontmatter. The same collection drives the sponsor grid on
+// `/companies-sponsors.html` (Milestone 4) — single source of truth.
+const homePartners = await getCollection('partners', (entry) =>
+  entry.data.featuredOn.includes('home'),
+);
 
-const MEMBERSHIP_FORM_URL =
-  'https://docs.google.com/forms/d/1tpHwjsberWYWbVuiEy9S6CP44k0gxJuaFi9ha5QBIqM/viewform';
+const siteEntry = await getEntry('site', 'social');
+if (!siteEntry) {
+  throw new Error(
+    "index.astro: missing 'social' entry in the `site` data collection " +
+      '(expected at src/content/site/social.json).',
+  );
+}
+const membershipFormUrl = siteEntry.data.membershipFormUrl;
 ---
 
 <BaseLayout title="La French Tech Denver">
@@ -89,7 +56,7 @@ const MEMBERSHIP_FORM_URL =
         social and environmental impact.
       </p>
       <p style="margin-top: 24px;">
-        <a class="cta" href={MEMBERSHIP_FORM_URL} target="_blank" rel="noopener">
+        <a class="cta" href={membershipFormUrl} target="_blank" rel="noopener">
           Become a Member
         </a>
       </p>
@@ -97,26 +64,20 @@ const MEMBERSHIP_FORM_URL =
 
     <div class="section kpis">
       {kpis.map((kpi) => (
-        <div class="card kpi">
-          <div class="num">{kpi.value}</div>
-          <div class="label">{kpi.label}</div>
-        </div>
+        <KpiCard value={kpi.data.value} label={kpi.data.label} />
       ))}
     </div>
 
     <div class="section card">
       <h2>Friends & Partners</h2>
       <div class="grid grid-3">
-        {partners.map((partner) => (
-          <div class="partner">
-            <a href={partner.url} target="_blank" rel="noopener">
-              <img alt={partner.alt} src={partner.logo} />
-              <div>
-                <h4>{partner.name}</h4>
-                <div class="note">{partner.tagline}</div>
-              </div>
-            </a>
-          </div>
+        {homePartners.map((partner) => (
+          <PartnerCard
+            name={partner.data.name}
+            tagline={partner.data.tagline}
+            url={partner.data.url}
+            logo={partner.data.logo}
+          />
         ))}
       </div>
     </div>
