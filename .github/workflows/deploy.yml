@@ -164,6 +164,23 @@ jobs:
           fi
           echo "dist/CNAME contents: $(cat dist/CNAME)"
 
+      # Per-image size budget (≤ 300 KB) per the milestone spec. Astro's
+      # <Image> emits the original-format fallback alongside AVIF/WebP, so
+      # an oversized source JPEG still ends up in dist/_astro/. The check
+      # below scans every image asset in dist/ and fails the build if any
+      # exceeds 300 KB. This is a hard error, not a warning, because the
+      # legacy 2.4 MB hero and 3.9 MB sandrine photo are exactly what this
+      # milestone is supposed to fix.
+      - name: Verify per-image budget (≤ 300 KB)
+        run: |
+          oversized=$(find dist -type f \( -name '*.jpg' -o -name '*.jpeg' -o -name '*.png' -o -name '*.webp' -o -name '*.avif' -o -name '*.gif' \) -size +300k -printf '%s %p\n' | sort -nr || true)
+          if [ -n "$oversized" ]; then
+            echo "ERROR: image asset(s) exceed the 300 KB per-image budget:"
+            echo "$oversized"
+            exit 1
+          fi
+          echo "All image assets in dist/ are ≤ 300 KB."
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
