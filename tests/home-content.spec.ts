@@ -45,7 +45,9 @@ test.describe('Home Page Content', () => {
 
   test('"What is La French Tech Denver" section heading is present', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: 'What is La French Tech Denver' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'What is La French Tech Denver' }),
+    ).toBeVisible();
   });
 
   test('"Become a Member" CTA links to the Google Form', async ({ page }) => {

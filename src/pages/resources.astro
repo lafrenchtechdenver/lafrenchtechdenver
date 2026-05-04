@@ -1,19 +1,40 @@
 ---
 /**
- * Placeholder for `/resources.html` — Milestone 4 restores the welcome-to-France
- * resources card.
+ * `/resources.html` — Resources page.
+ *
+ * Milestone 4 promotes this page from a Milestone-1 placeholder to its real
+ * content: a hero and a single curated resource card pointing at
+ * welcometofrance.com (the official "Welcome to France" portal that helps
+ * founders, talent, and families navigate moving to and from France).
+ *
+ * The page intentionally stays small — the resources list is a curated
+ * pointer, not a directory. New resources can be added as additional
+ * `.card` blocks (or, when the list grows past three, modelled as a
+ * `resources` content collection following the same pattern as `partners`).
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
 ---
 
 <BaseLayout
   title="Resources — La French Tech Denver"
   description="Useful resources for the French tech community in Denver."
 >
+  <Hero title="Resources" subtitle="Curated guides and links for our community." />
+
   <div class="container">
     <div class="section card">
-      <h1>Resources</h1>
-      <p class="note">Coming soon — the full resources page ships in Milestone 4.</p>
+      <h2>Welcome to France</h2>
+      <p>
+        The official portal for international talent, founders, and researchers moving to or working
+        with France. Visa pathways, French Tech programs, relocation support, and ecosystem entry
+        points all in one place.
+      </p>
+      <p style="margin-top: 24px;">
+        <a class="cta" href="https://welcometofrance.com" target="_blank" rel="noopener">
+          Visit welcometofrance.com
+        </a>
+      </p>
     </div>
   </div>
 </BaseLayout>

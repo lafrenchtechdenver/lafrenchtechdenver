@@ -42,7 +42,7 @@
       document.documentElement.setAttribute('data-theme', newTheme);
       try {
         localStorage.setItem('theme', newTheme);
-      } catch (e) {
+      } catch {
         // localStorage may be disabled (Safari private mode, etc.) —
         // theme will reset on reload but the in-tab toggle still works.
       }

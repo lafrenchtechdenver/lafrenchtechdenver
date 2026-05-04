@@ -1,0 +1,55 @@
+---
+/**
+ * Hero block — heading + subhead layered over the optimized hero photo.
+ *
+ * Milestone 4 replaces the legacy CSS `background-image: url('/assets/hero.jpg')`
+ * (a flat 2.4 MB JPEG loaded on every page) with Astro's `<Picture>` component.
+ * Sharp emits responsive AVIF / WebP / JPEG variants under `dist/_astro/`,
+ * dropping the largest delivered hero to well under 300 KB and giving us
+ * automatic `srcset` + `sizes` against device pixel ratios. See Design
+ * Decision 2 (approach 2) in `MILESTONE.md`.
+ *
+ * `<Picture>` is used here (rather than `<Image>`) because we want both AVIF
+ * and WebP variants to be emitted as `<source>` elements with a JPEG fallback;
+ * Astro's `<Image>` only supports a single output format via its `format` prop.
+ *
+ * Layout strategy: the `<Picture>` fallback `<img>` is absolutely positioned
+ * behind the content inside a relatively-positioned `<section>`. The legacy
+ * theme-aware gradient overlay (`--hero-overlay`) is kept as a `::before`
+ * pseudo-element on the section so heading contrast still works in both
+ * themes. The two soft brand-color radial gradients move to a `::after`
+ * pseudo-element for the same reason.
+ *
+ * The hero image is the single Largest Contentful Paint candidate on every
+ * page that uses this component, so it carries `loading="eager"` and
+ * `fetchpriority="high"` to start downloading on the same connection as the
+ * HTML rather than waiting for the lazy-load IntersectionObserver to fire.
+ */
+import { Picture } from 'astro:assets';
+import heroImage from '../assets/hero.jpg';
+
+interface Props {
+  title: string;
+  subtitle?: string;
+}
+
+const { title, subtitle } = Astro.props;
+---
+
+<section class="hero">
+  <Picture
+    class="hero-image"
+    src={heroImage}
+    alt=""
+    widths={[640, 960, 1280, 1600]}
+    sizes="100vw"
+    loading="eager"
+    fetchpriority="high"
+    quality={70}
+    formats={['avif', 'webp']}
+  />
+  <div class="container">
+    <h1>{title}</h1>
+    {subtitle && <p>{subtitle}</p>}
+  </div>
+</section>

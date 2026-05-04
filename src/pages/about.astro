@@ -17,35 +17,29 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import Hero from '../components/Hero.astro';
 import BoardCard from '../components/BoardCard.astro';
 
-const board = (await getCollection('board')).sort(
-  (a, b) => a.data.order - b.data.order,
-);
+const board = (await getCollection('board')).sort((a, b) => a.data.order - b.data.order);
 ---
 
 <BaseLayout
   title="About us — La French Tech Denver"
   description="About La French Tech Denver: our mission, values, and the volunteer board behind the community."
 >
-  <section class="hero">
-    <div class="container">
-      <h1>About La French Tech Denver</h1>
-      <p>
-        We are a curated support community helping entrepreneurs thrive through a strong
-        network and shared best practices.
-      </p>
-    </div>
-  </section>
+  <Hero
+    title="About La French Tech Denver"
+    subtitle="We are a curated support community helping entrepreneurs thrive through a strong network and shared best practices."
+  />
 
   <div class="container">
     <div class="grid grid-2">
       <div class="card">
         <h2>Our Mission</h2>
         <p>
-          Bring French entrepreneurs together, help develop startups, and support
-          French-speaking tech players in the Denver/Boulder region. We connect French
-          startups with investors and local tech leaders.
+          Bring French entrepreneurs together, help develop startups, and support French-speaking
+          tech players in the Denver/Boulder region. We connect French startups with investors and
+          local tech leaders.
         </p>
         <h3>Goals</h3>
         <ul>
@@ -67,14 +61,16 @@ const board = (await getCollection('board')).sort(
     <div class="section">
       <h2>Meet the Board</h2>
       <div class="board">
-        {board.map((member) => (
-          <BoardCard
-            name={member.data.name}
-            role={member.data.role}
-            photo={member.data.photo}
-            grayscale={member.data.grayscale}
-          />
-        ))}
+        {
+          board.map((member) => (
+            <BoardCard
+              name={member.data.name}
+              role={member.data.role}
+              photo={member.data.photo}
+              grayscale={member.data.grayscale}
+            />
+          ))
+        }
       </div>
     </div>
   </div>

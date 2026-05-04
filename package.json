@@ -11,7 +11,11 @@
     "preview": "astro preview --host 127.0.0.1 --port 4321",
     "astro": "astro",
     "check": "astro check",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:a11y": "playwright test tests/a11y.spec.ts tests/a11y-basic.spec.ts",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "engines": {
     "node": ">=22.0.0"
@@ -23,11 +27,20 @@
     "@fontsource-variable/inter": "^5.1.1",
     "@tailwindcss/vite": "^4.0.0",
     "astro": "^5.1.9",
+    "sharp": "^0.33.5",
     "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@axe-core/playwright": "^4.10.0",
     "@playwright/test": "^1.49.1",
-    "typescript": "^5.7.3"
+    "axe-core": "^4.10.0",
+    "eslint": "^9.17.0",
+    "eslint-plugin-astro": "^1.3.1",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2",
+    "prettier-plugin-astro": "^0.14.1",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
   }
 }

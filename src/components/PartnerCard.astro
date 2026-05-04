@@ -6,10 +6,18 @@
  * `<a target="_blank" rel="noopener">`; that contract is preserved here so the
  * existing `.partner` styles in `src/styles/global.css` continue to apply.
  *
- * Like BoardCard, Milestone 3 keeps the logo as a raw `<img>` referencing
- * the resolved `.src` URL of the typed `ImageMetadata`. Milestone 4 swaps to
- * `<Image>` for the Sharp pipeline.
+ * Milestone 4 swaps the raw `<img>` for Astro's `<Picture>` component so the
+ * Sharp pipeline emits responsive `srcset`, AVIF/WebP, and `loading="lazy"`
+ * automatically. Partner logos render at a fixed 120 × 120 box (with
+ * `object-fit: contain` from the global stylesheet); Sharp emits 1× and 2×
+ * variants so hidpi screens stay sharp without delivering full-resolution
+ * source files.
+ *
+ * `<Picture>` is used here (rather than `<Image>`) because we want both AVIF
+ * and WebP variants emitted as `<source>` elements with a fallback `<img>`;
+ * Astro's `<Image>` only supports a single output format via its `format` prop.
  */
+import { Picture } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
 interface Props {
@@ -24,11 +32,16 @@ const { name, tagline, url, logo } = Astro.props;
 
 <div class="partner" data-testid="partner-card">
   <a href={url} target="_blank" rel="noopener">
-    <img
+    <Picture
+      src={logo}
       alt={`${name} logo`}
-      src={logo.src}
-      width={logo.width}
-      height={logo.height}
+      width={240}
+      height={240}
+      widths={[120, 240]}
+      sizes="120px"
+      loading="lazy"
+      quality={80}
+      formats={['avif', 'webp']}
     />
     <div>
       <h4>{name}</h4>

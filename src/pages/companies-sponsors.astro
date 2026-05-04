@@ -1,19 +1,79 @@
 ---
 /**
- * Placeholder for `/companies-sponsors.html` — Milestone 3 wires this up
- * against the `partners` content collection (`featuredOn: ['sponsors']`).
+ * `/companies-sponsors.html` — Companies & Sponsors page.
+ *
+ * Milestone 4 promotes this page from a Milestone-1 placeholder to its real
+ * content: a hero, a mission paragraph, and the "Friends" grid driven by the
+ * `partners` content collection filtered to entries that opt in via
+ * `featuredOn: ['sponsors']`. Today that's Techstars and Finmark; the same
+ * collection (with a `featuredOn: ['home']` flag) feeds the home-page grid,
+ * giving us a single source of truth for partner data across both pages.
+ *
+ * The legacy `companies-sponsors.html` carried a `<!-- Supporters -->` block
+ * commented out for future use. We preserve that pattern as an HTML comment
+ * inside the rendered page so the next contributor sees the convention
+ * without it actually rendering. (Astro JSX comments would not survive into
+ * the rendered HTML; we use `set:html` with an HTML-comment string so the
+ * comment ships in the production output.)
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import Hero from '../components/Hero.astro';
+import PartnerCard from '../components/PartnerCard.astro';
+
+// Single source of truth: filter the shared `partners` collection. Sort
+// alphabetically by name so the rendered order is deterministic and stable
+// across operating systems (filesystem iteration order is not guaranteed).
+const sponsorPartners = (
+  await getCollection('partners', (entry) => entry.data.featuredOn.includes('sponsors'))
+).sort((a, b) => a.data.name.localeCompare(b.data.name));
+
+// Preserved as an HTML comment in the rendered output so the legacy
+// "Supporters" pattern is discoverable for future contributors without
+// rendering anything visible. Mirrors the commented block in the legacy
+// `companies-sponsors.html`.
+const supportersPlaceholder = `<!--
+  Supporters
+  ----------
+  Future "Supporters" section. The legacy companies-sponsors.html shipped
+  an empty supporters block here that was commented out pending content.
+  When supporters are ready to publish, model them as a new content
+  collection (or a new featuredOn value, e.g. 'supporters') and render
+  them through the same PartnerCard component used above.
+-->`;
 ---
 
 <BaseLayout
   title="Companies & Sponsors — La French Tech Denver"
   description="Companies and sponsors partnering with La French Tech Denver."
 >
+  <Hero
+    title="Companies & Sponsors"
+    subtitle="The organisations that back our community and make our events possible."
+  />
+
   <div class="container">
     <div class="section card">
-      <h1>Companies & Sponsors</h1>
-      <p class="note">Coming soon — the full partners page ships in Milestone 3.</p>
+      <h2>Friends</h2>
+      <p>
+        We are grateful to the companies that share our mission of bringing the French and Colorado
+        tech communities closer together. They sponsor our gatherings, host our events, and back the
+        founders we connect.
+      </p>
+      <div class="grid grid-3">
+        {
+          sponsorPartners.map((partner) => (
+            <PartnerCard
+              name={partner.data.name}
+              tagline={partner.data.tagline}
+              url={partner.data.url}
+              logo={partner.data.logo}
+            />
+          ))
+        }
+      </div>
     </div>
+
+    <Fragment set:html={supportersPlaceholder} />
   </div>
 </BaseLayout>

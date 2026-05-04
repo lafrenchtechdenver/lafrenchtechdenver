@@ -1,27 +1,34 @@
 import { expect, test } from '@playwright/test';
 
 /**
- * placeholder-pages.spec.ts — Placeholder page verification.
+ * placeholder-pages.spec.ts — Page-shell smoke tests for the secondary pages.
  *
- * Originally Milestone 1 shipped six placeholder pages. Milestone 3 promotes
- * `/about.html` from placeholder to a real, content-driven page (mission,
- * values, and the full board grid sourced from the `board` content
- * collection); its assertions live in `tests/content.spec.ts` now.
+ * Originally Milestone 1 shipped placeholder pages for the four secondary
+ * URLs while their real content was deferred. Milestone 4 promotes all of
+ * them to fully content-driven pages — the "Coming soon" assertion that
+ * lived here is no longer applicable, and richer assertions about each
+ * page's content live in the content-specific specs:
  *
- * The pages still in this list remain placeholders until later milestones
- * bring them online. Each one must render via BaseLayout, expose its own
- * <h1>, and carry a "Coming soon" note so the nav link does not 404.
+ *   - /events.html             → tests/external-content.spec.ts (Luma iframe)
+ *   - /members-benefits.html   → tests/external-content.spec.ts (Google Form CTA)
+ *   - /companies-sponsors.html → tests/content.spec.ts (sponsor PartnerCards)
+ *   - /resources.html          → covered by tests/nav.spec.ts (smoke + nav)
+ *
+ * What stays here is the structural smoke test that survives every milestone:
+ * each secondary URL must return 200, render its expected `<h1>`, and ship
+ * its nav + footer chrome via BaseLayout. If any of those break we want a
+ * fast, page-by-page failure rather than diagnosing it from a deeper spec.
  */
 
-const PLACEHOLDER_PAGES: Array<{ url: string; h1: string }> = [
+const SECONDARY_PAGES: Array<{ url: string; h1: string }> = [
   { url: '/companies-sponsors.html', h1: 'Companies & Sponsors' },
   { url: '/events.html', h1: 'Events' },
   { url: '/members-benefits.html', h1: 'Members Benefits' },
   { url: '/resources.html', h1: 'Resources' },
 ];
 
-test.describe('Placeholder Pages', () => {
-  for (const { url, h1 } of PLACEHOLDER_PAGES) {
+test.describe('Secondary page shells', () => {
+  for (const { url, h1 } of SECONDARY_PAGES) {
     test(`${url} returns 200`, async ({ page }) => {
       const response = await page.goto(url);
       expect(response?.status(), `GET ${url} should return 200`).toBeLessThan(400);
@@ -36,17 +43,11 @@ test.describe('Placeholder Pages', () => {
     test(`${url} renders via BaseLayout (has nav + footer)`, async ({ page }) => {
       await page.goto(url);
 
-      // Nav is always present — check for at least one nav link.
+      // Nav is always present — check for the menu element rendered by Nav.astro.
       await expect(page.locator('#menu')).toBeVisible();
 
       // Footer is always present.
       await expect(page.locator('footer')).toBeVisible();
-    });
-
-    test(`${url} has a "Coming soon" note`, async ({ page }) => {
-      await page.goto(url);
-      // All placeholder pages include some variant of "Coming soon".
-      await expect(page.locator('body')).toContainText('Coming soon');
     });
   }
 });

@@ -19,9 +19,7 @@ test.describe('Theme Toggle', () => {
     await page.evaluate(() => localStorage.removeItem('theme'));
     await page.reload();
 
-    const theme = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
-    );
+    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(theme).toBe('light');
   });
 
@@ -32,9 +30,7 @@ test.describe('Theme Toggle', () => {
 
     await page.click('#theme-toggle');
 
-    const theme = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
-    );
+    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(theme).toBe('dark');
   });
 
@@ -46,9 +42,7 @@ test.describe('Theme Toggle', () => {
     await page.click('#theme-toggle');
     await page.click('#theme-toggle');
 
-    const theme = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
-    );
+    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(theme).toBe('light');
   });
 
@@ -74,9 +68,7 @@ test.describe('Theme Toggle', () => {
     // Reload — the inline <head> script should restore "dark" before body renders.
     await page.reload();
 
-    const theme = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
-    );
+    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(theme).toBe('dark');
   });
 
@@ -86,9 +78,7 @@ test.describe('Theme Toggle', () => {
     await page.evaluate(() => localStorage.setItem('theme', 'light'));
     await page.reload();
 
-    const theme = await page.evaluate(() =>
-      document.documentElement.getAttribute('data-theme'),
-    );
+    const theme = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(theme).toBe('light');
   });
 
@@ -103,7 +93,13 @@ test.describe('Theme Toggle', () => {
     ];
 
     for (const url of pages) {
-      await page.goto(url);
+      // `/events.html` embeds the Luma calendar iframe, whose React app keeps
+      // the page's `load` event open for ~30 s on every visit. The default
+      // `page.goto(...)` waits for `load`, which times out the test even
+      // though our chrome (nav + hero + iframe wrapper) has long since
+      // rendered. `domcontentloaded` is sufficient for verifying the theme
+      // toggle is present.
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
       const toggle = page.locator('#theme-toggle');
       await expect(toggle, `#theme-toggle should be visible on ${url}`).toBeVisible();
     }

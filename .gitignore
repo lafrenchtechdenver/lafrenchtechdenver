@@ -38,6 +38,9 @@ playwright-report/
 test-results/
 playwright/.cache/
 
+# Lighthouse CI
+.lighthouseci/
+
 # Python (functional testing environment)
 .venv/
 venv/

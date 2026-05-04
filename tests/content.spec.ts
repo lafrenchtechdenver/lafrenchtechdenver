@@ -45,9 +45,7 @@ test.describe('Content collections render correctly', () => {
     await expect(cards).toHaveCount(EXPECTED_KPI_VALUES.length);
 
     for (const value of EXPECTED_KPI_VALUES) {
-      await expect(
-        page.locator('[data-testid="kpi-card"]', { hasText: value }),
-      ).toHaveCount(1);
+      await expect(page.locator('[data-testid="kpi-card"]', { hasText: value })).toHaveCount(1);
     }
   });
 
@@ -57,9 +55,7 @@ test.describe('Content collections render correctly', () => {
     await expect(cards).toHaveCount(EXPECTED_HOME_PARTNERS.length);
 
     for (const name of EXPECTED_HOME_PARTNERS) {
-      await expect(
-        page.locator('[data-testid="partner-card"]', { hasText: name }),
-      ).toHaveCount(1);
+      await expect(page.locator('[data-testid="partner-card"]', { hasText: name })).toHaveCount(1);
     }
   });
 
@@ -68,15 +64,11 @@ test.describe('Content collections render correctly', () => {
     // `['sponsors']` only — they must not bleed onto the home page.
     await page.goto('/');
     for (const name of EXPECTED_SPONSOR_PARTNERS) {
-      await expect(
-        page.locator('[data-testid="partner-card"]', { hasText: name }),
-      ).toHaveCount(0);
+      await expect(page.locator('[data-testid="partner-card"]', { hasText: name })).toHaveCount(0);
     }
   });
 
-  test('about page shows all seven board members in defined order', async ({
-    page,
-  }) => {
+  test('about page shows all seven board members in defined order', async ({ page }) => {
     await page.goto('/about.html');
     const cards = page.locator('[data-testid="board-card"]');
     await expect(cards).toHaveCount(EXPECTED_BOARD_MEMBERS.length);
@@ -92,27 +84,19 @@ test.describe('Content collections render correctly', () => {
     await expect(images).toHaveCount(EXPECTED_BOARD_MEMBERS.length);
 
     for (let i = 0; i < EXPECTED_BOARD_MEMBERS.length; i += 1) {
-      await expect(images.nth(i)).toHaveAttribute(
-        'alt',
-        EXPECTED_BOARD_MEMBERS[i],
-      );
+      await expect(images.nth(i)).toHaveAttribute('alt', EXPECTED_BOARD_MEMBERS[i]);
     }
   });
 
-  // Sponsor partners (Techstars, Finmark) move from a placeholder page to a
-  // real page in Milestone 4 (`/companies-sponsors.html`). Skip-with-TODO so
-  // the assertion lives next to its siblings and is easy to flip on.
-  test.skip('companies-sponsors page shows the two sponsor partners (Milestone 4)', async ({
-    page,
-  }) => {
+  // Milestone 4 promotes /companies-sponsors.html from a placeholder to a
+  // real, content-driven page; the sponsor PartnerCards now render.
+  test('companies-sponsors page shows the two sponsor partners', async ({ page }) => {
     await page.goto('/companies-sponsors.html');
     const cards = page.locator('[data-testid="partner-card"]');
     await expect(cards).toHaveCount(EXPECTED_SPONSOR_PARTNERS.length);
 
     for (const name of EXPECTED_SPONSOR_PARTNERS) {
-      await expect(
-        page.locator('[data-testid="partner-card"]', { hasText: name }),
-      ).toHaveCount(1);
+      await expect(page.locator('[data-testid="partner-card"]', { hasText: name })).toHaveCount(1);
     }
   });
 });

@@ -16,9 +16,7 @@
  * `dark:` variants too — no drift between hand-written CSS selectors and Tailwind.
  */
 export default {
-  content: [
-    './src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}',
-  ],
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}'],
   darkMode: ['selector', '[data-theme="dark"]'],
   theme: {
     extend: {

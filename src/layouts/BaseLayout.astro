@@ -51,30 +51,34 @@ const currentPath = Astro.url.pathname;
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={ogImage} />
 
-    {/*
+    {
+      /*
       Theme bootstrap. Runs synchronously in <head> before <body> parses, so the
       `data-theme` attribute is correct on first paint and there is no flash of
       unstyled theme when a dark-mode user reloads. Keep this as a tiny inline
       script — the interactive toggle handler lives in `ThemeToggle.astro`.
       See /l2l/mcode/instructions/keep_theme_bootstrap_inline_in_head.md.
-    */}
+    */
+    }
     <script is:inline>
       (function () {
         try {
-          var theme = localStorage.getItem('theme') || 'light';
+          const theme = localStorage.getItem('theme') || 'light';
           document.documentElement.setAttribute('data-theme', theme);
-        } catch (e) {
+        } catch {
           document.documentElement.setAttribute('data-theme', 'light');
         }
       })();
     </script>
   </head>
   <body>
-    {/*
+    {
+      /*
       Skip-to-content link — first focusable element on the page so a keyboard
       user pressing Tab can jump straight past the nav. Visually hidden until
       focused via the `.skip-link` styles in global.css.
-    */}
+    */
+    }
     <a class="skip-link" href="#main-content">Skip to content</a>
     <Nav currentPath={currentPath} />
     <main id="main-content">
