@@ -1,0 +1,214 @@
+# Deploy La French Tech Denver to GitHub Pages.
+#
+# This workflow replaces GitHub's default "Deploy from a branch" mechanism
+# with a proper CI build that lints, type-checks, runs the Playwright suite,
+# enforces a Lighthouse perf + image-size budget, and only then publishes
+# `dist/` to the GitHub Pages environment.
+#
+# Order of operations for the GitHub Pages settings flip is documented in
+# DEPLOY.md (Design Decision 3 in MILESTONE.md): merge this workflow to
+# `main` first, verify the build job produces a valid artifact, *then* flip
+# Repository Settings → Pages from "Deploy from a branch" to "GitHub
+# Actions" so the production custom domain (lafrenchtechdenver.com) sees
+# zero downtime.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Only one production deploy at a time. PR builds run independently.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  # ────────────────────────────────────────────────────────────────────────
+  # 1. lint — Astro typecheck + ESLint + Prettier
+  # ────────────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint & typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable Corepack (pnpm 9)
+        run: corepack enable
+
+      - name: Get pnpm store path
+        id: pnpm-store
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Astro typecheck
+        run: pnpm astro check
+
+      - name: ESLint
+        run: pnpm lint
+
+      - name: Prettier
+        run: pnpm format:check
+
+  # ────────────────────────────────────────────────────────────────────────
+  # 2. test — Playwright E2E + axe a11y scan
+  # ────────────────────────────────────────────────────────────────────────
+  test:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable Corepack (pnpm 9)
+        run: corepack enable
+
+      - name: Get pnpm store path
+        id: pnpm-store
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: pnpm test:e2e
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  # ────────────────────────────────────────────────────────────────────────
+  # 3. build — Astro build + Lighthouse CI + Pages artifact
+  # ────────────────────────────────────────────────────────────────────────
+  build:
+    name: Build & Lighthouse
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable Corepack (pnpm 9)
+        run: corepack enable
+
+      - name: Get pnpm store path
+        id: pnpm-store
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build site
+        run: pnpm build
+
+      # `dist/CNAME` flows from `public/CNAME` and is what keeps the custom
+      # domain attached to GitHub Pages. Fail loudly if it's missing.
+      - name: Verify dist/CNAME exists
+        run: |
+          if [ ! -f dist/CNAME ]; then
+            echo "ERROR: dist/CNAME missing — custom domain will detach on deploy."
+            exit 1
+          fi
+          echo "dist/CNAME contents: $(cat dist/CNAME)"
+
+      # Per-image size budget (≤ 300 KB) per the milestone spec. Astro's
+      # <Image> emits the original-format fallback alongside AVIF/WebP, so
+      # an oversized source JPEG still ends up in dist/_astro/. The check
+      # below scans every image asset in dist/ and fails the build if any
+      # exceeds 300 KB. This is a hard error, not a warning, because the
+      # legacy 2.4 MB hero and 3.9 MB sandrine photo are exactly what this
+      # milestone is supposed to fix.
+      - name: Verify per-image budget (≤ 300 KB)
+        run: |
+          oversized=$(find dist -type f \( -name '*.jpg' -o -name '*.jpeg' -o -name '*.png' -o -name '*.webp' -o -name '*.avif' -o -name '*.gif' \) -size +300k -printf '%s %p\n' | sort -nr || true)
+          if [ -n "$oversized" ]; then
+            echo "ERROR: image asset(s) exceed the 300 KB per-image budget:"
+            echo "$oversized"
+            exit 1
+          fi
+          echo "All image assets in dist/ are ≤ 300 KB."
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Run Lighthouse CI
+        run: pnpm dlx @lhci/cli@0.14.x autorun --config=.lighthouserc.json
+        continue-on-error: false
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  # ────────────────────────────────────────────────────────────────────────
+  # 4. deploy — Publish to GitHub Pages (main branch only)
+  # ────────────────────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

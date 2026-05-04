@@ -1,0 +1,125 @@
+---
+/**
+ * Sticky top navigation shared by every page.
+ *
+ * Milestone 2 splits the social block and theme toggle into their own
+ * components (`SocialLinks.astro` and `ThemeToggle.astro`). Nav now owns:
+ *   - the six menu links + active-state logic derived from `Astro.url.pathname`
+ *   - the burger button
+ *   - the burger open/close + outside-click client script (kept inline because
+ *     it is small and runs without bundler ceremony — see
+ *     `project_wiki/architecture/theme-and-menu.md`)
+ *
+ * The theme bootstrap stays inline in `BaseLayout.astro`'s `<head>`; only the
+ * interactive click handler lives in `ThemeToggle.astro`. See
+ * `/l2l/mcode/instructions/keep_theme_bootstrap_inline_in_head.md`.
+ */
+
+import SocialLinks from './SocialLinks.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+
+const menuItems: Array<{ href: string; label: string }> = [
+  { href: '/index.html', label: 'Home' },
+  { href: '/about.html', label: 'About us' },
+  { href: '/companies-sponsors.html', label: 'Companies & Sponsors' },
+  { href: '/members-benefits.html', label: 'Members Benefits' },
+  { href: '/events.html', label: 'Events' },
+  { href: '/resources.html', label: 'Resources' },
+];
+
+function isActive(href: string): boolean {
+  // Treat `/` and `/index.html` as equivalent for the Home link.
+  if (href === '/index.html') {
+    return currentPath === '/' || currentPath === '/index.html';
+  }
+  return currentPath === href;
+}
+---
+
+<header class="nav">
+  <div class="container nav-inner">
+    <div class="logo">
+      {
+        /*
+        Intentional raw <img>. The brand mark is also the canonical OpenGraph
+        / Twitter card image referenced by the absolute URL
+        `https://lafrenchtechdenver.com/assets/logos/Logo_FT_Denver.png` in
+        `BaseLayout.astro`. Routing it through Astro's `<Image>` component
+        would rewrite the path to a hashed `/_astro/Logo_FT_Denver-…` filename
+        and break every social-share preview pointing at the stable URL — so
+        the file is kept under `public/assets/logos/` and rendered here as a
+        small (51 KB) static asset. Documented in `MILESTONE.md` ("Risks").
+      */
+      }
+      <img
+        src="/assets/logos/Logo_FT_Denver.png"
+        alt="La French Tech Denver logo"
+        width="40"
+        height="40"
+        style="height: 40px; width: auto;"
+      />
+      <span>La French Tech Denver</span>
+    </div>
+    <button
+      class="burger"
+      type="button"
+      aria-label="Toggle menu"
+      id="burger-button"
+      aria-controls="menu"
+      aria-expanded="false"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="menu" id="menu">
+      {
+        menuItems.map((item) => (
+          <a href={item.href} class={isActive(item.href) ? 'active' : ''}>
+            {item.label}
+          </a>
+        ))
+      }
+      <SocialLinks />
+      <ThemeToggle />
+    </nav>
+  </div>
+</header>
+
+<script is:inline>
+  // Burger menu toggle + outside-click close. Kept inline so it runs without
+  // needing JS bundling and matches the legacy behavior one-to-one.
+  (function () {
+    const burger = document.getElementById('burger-button');
+    const menu = document.getElementById('menu');
+    if (!burger || !menu) return;
+
+    function toggleMenu() {
+      menu.classList.toggle('active');
+      burger.classList.toggle('active');
+      const expanded = menu.classList.contains('active');
+      burger.setAttribute('aria-expanded', String(expanded));
+    }
+
+    burger.addEventListener('click', function (event) {
+      event.stopPropagation();
+      toggleMenu();
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!menu.classList.contains('active')) return;
+      const nav = document.querySelector('.nav');
+      if (nav && !nav.contains(event.target)) {
+        menu.classList.remove('active');
+        burger.classList.remove('active');
+        burger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+</script>

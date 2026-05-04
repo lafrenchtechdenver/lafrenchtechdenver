@@ -1,0 +1,89 @@
+---
+/**
+ * Single source of truth for every page's <head>, global CSS import, theme
+ * bootstrap, skip-link, nav, and footer. All six pages render their unique
+ * content into this layout's default <slot>.
+ *
+ * Meta defaults mirror the legacy inline <head>: OpenGraph + Twitter cards
+ * pointing at the Logo_FT_Denver image, favicon at /assets/favicon.ico.
+ *
+ * Accessibility baseline (Milestone 2):
+ *   - The very first focusable element on every page is the skip-to-content
+ *     link, which jumps focus to `<main id="main-content">`.
+ *   - The skip link is visually hidden until focused (see `.skip-link` rules
+ *     in `src/styles/global.css`).
+ *   - Focus rings, reduced-motion handling, and hero contrast fixes all live
+ *     in `global.css`; this layout owns only the structure that hosts them.
+ */
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const {
+  title = 'La French Tech Denver',
+  description = 'French Tech Community Denver connects founders, tech talent, VCs, corporates and public partners between France and Colorado.',
+  ogImage = 'https://lafrenchtechdenver.com/assets/logos/Logo_FT_Denver.png',
+} = Astro.props;
+
+// Astro.url.pathname is the source-route path ("/index.html", "/about.html", ...).
+// Passed through to Nav so the matching menu link gets the `.active` style.
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
+
+    {
+      /*
+      Theme bootstrap. Runs synchronously in <head> before <body> parses, so the
+      `data-theme` attribute is correct on first paint and there is no flash of
+      unstyled theme when a dark-mode user reloads. Keep this as a tiny inline
+      script — the interactive toggle handler lives in `ThemeToggle.astro`.
+      See /l2l/mcode/instructions/keep_theme_bootstrap_inline_in_head.md.
+    */
+    }
+    <script is:inline>
+      (function () {
+        try {
+          const theme = localStorage.getItem('theme') || 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    {
+      /*
+      Skip-to-content link — first focusable element on the page so a keyboard
+      user pressing Tab can jump straight past the nav. Visually hidden until
+      focused via the `.skip-link` styles in global.css.
+    */
+    }
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <Nav currentPath={currentPath} />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

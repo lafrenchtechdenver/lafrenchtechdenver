@@ -1,0 +1,652 @@
+/*
+ * Global stylesheet for La French Tech Denver.
+ *
+ * Milestone 2 rewrites the verbatim legacy CSS into Tailwind 4 layers:
+ *   - `@layer base`     — resets, design-token CSS custom properties for both
+ *                         themes, body typography, focus rings, skip-link,
+ *                         reduced-motion guard.
+ *   - `@layer components` — `.card / .cta / .hero / .kpi / .partner / .board /
+ *                         .event / .note / .nav / .menu / .burger /
+ *                         .theme-toggle / .social-link / .skip-link` patterns
+ *                         composed with `@apply` against the tokens.
+ *
+ * Brand tokens (`--primary`, `--accent`, ...) are stored as space-separated
+ * R G B triplets so Tailwind's `<alpha-value>` substitution works for opacity
+ * utilities (`bg-primary/80`, `ring-primary/20`). The dark-theme palette mirrors
+ * the same names under `[data-theme="dark"]`, keyed by the inline-head bootstrap
+ * in `BaseLayout.astro`.
+ *
+ * The hero contrast fix from Milestone 2: hero text used to be forced to
+ * `#0f172a` regardless of theme — fixed here by using `var(--text)` and a
+ * dark gradient overlay on the hero image so the heading reads against any
+ * crop of `hero.jpg` in both light and dark mode.
+ */
+
+/* Self-hosted variable fonts. Both packages publish OFL fonts under MIT
+ * npm wrappers — no Google Fonts request, GDPR-clean. */
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/bricolage-grotesque';
+
+@import 'tailwindcss';
+@config '../../tailwind.config.mjs';
+
+/*
+ * Tailwind 4 reads the JS config above for content paths, color tokens, and
+ * font stacks. We also wire the `dark:` variant to the same `[data-theme="dark"]`
+ * selector that the inline bootstrap toggles, so hand-written CSS selectors and
+ * Tailwind dark utilities never drift.
+ */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* -------------------------------------------------------------------------- */
+/* Design tokens                                                              */
+/* -------------------------------------------------------------------------- */
+
+@layer base {
+  :root {
+    /* Core palette — French Tech red + blue. Stored as R G B triplets for
+     * `rgb(var(--token) / <alpha-value>)` style references in tailwind.config. */
+    --bg: 247 247 251;
+    --card: 255 255 255;
+    --text: 15 23 42;
+    --muted: 71 85 105;
+    --primary: 239 65 53;
+    --primary-contrast: 255 255 255;
+    /*
+     * `--primary-strong` is a slightly darker shade of `--primary` used as the
+     * background for white-on-red surfaces (`.cta`, `.skip-link`) where WCAG
+     * 2.2 AA requires ≥ 4.5:1 contrast. The brand red `#EF4135` only reaches
+     * ~3.87:1 against white; `#C72F24` reaches ~5.4:1 while staying
+     * recognisably "French Tech red." `--primary` is preserved unchanged for
+     * accent borders, focus rings, and hero gradients (Milestone 2 tests
+     * pin its exact value).
+     */
+    --primary-strong: 199 47 36;
+    --accent: 0 85 164;
+    --border: 229 231 235;
+    --badge-bg: 255 255 255;
+
+    /* Composite tokens that need explicit alpha or gradient syntax. */
+    --ring: rgba(239, 65, 53, 0.2);
+    --shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+    --nav-bg: rgba(255, 255, 255, 0.7);
+    --hero-gradient-1: rgba(0, 85, 164, 0.08);
+    --hero-gradient-2: rgba(239, 65, 53, 0.08);
+    --hero-overlay: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.35) 100%
+    );
+  }
+
+  [data-theme='dark'] {
+    --bg: 15 23 42;
+    --card: 30 41 59;
+    --text: 241 245 249;
+    --muted: 148 163 184;
+    --primary: 239 65 53;
+    --primary-contrast: 255 255 255;
+    /* Same reasoning as light mode — the `--primary-strong` shade is used as
+     * the AA-compliant button background. White on `#C72F24` reaches ~5.4:1,
+     * which is comfortable on both light and dark backgrounds. */
+    --primary-strong: 199 47 36;
+    --accent: 59 130 246;
+    --border: 51 65 85;
+    --badge-bg: 30 41 59;
+
+    --ring: rgba(239, 65, 53, 0.3);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    --nav-bg: rgba(30, 41, 59, 0.8);
+    --hero-gradient-1: rgba(59, 130, 246, 0.12);
+    --hero-gradient-2: rgba(239, 65, 53, 0.12);
+    --hero-overlay: linear-gradient(180deg, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.7) 100%);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    /* `font-sans` resolves to the Inter Variable + system-ui fallback chain
+     * declared in tailwind.config.mjs. */
+    @apply font-sans antialiased;
+    background: rgb(var(--bg)) url('/pattern.svg') center/120px repeat;
+    color: rgb(var(--text));
+    line-height: 1.6;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    /* Display font — Bricolage Grotesque Variable, falls back through the
+     * existing system-ui chain. */
+    @apply font-display;
+    letter-spacing: -0.01em;
+  }
+
+  a {
+    color: rgb(var(--primary));
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* WCAG 2.2 AA focus ring on every interactive affordance. The legacy
+   * stylesheet had none — Tab keypresses produced no visible focus.
+   *
+   * IMPORTANT: This rule MUST set outline + outline-offset only — adding
+   * `border-radius` here would silently shrink the rendered corners of every
+   * focused rounded affordance (.cta, .menu a, .theme-toggle, .skip-link).
+   * See `/l2l/mcode/instructions/no_border-radius_in_focus-visible_rule.md`. */
+  :focus-visible {
+    outline: 3px solid rgb(var(--primary));
+    outline-offset: 2px;
+  }
+
+  /* Respect users who set `prefers-reduced-motion`. The site uses several
+   * `transition: all 0.2s ease` rules and `transform: translateY(-1px)` on
+   * `.cta:hover`; gate them all so vestibular-sensitive users don't see motion. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Layout primitives + components                                             */
+/* -------------------------------------------------------------------------- */
+
+@layer components {
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  /* ---- Skip-to-content link (a11y baseline) ----------------------------- */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 8px;
+    z-index: 100;
+    padding: 8px 16px;
+    /* Uses `--primary-strong` for WCAG 2.2 AA contrast — see token comment in
+     * the design-tokens block above. */
+    background: rgb(var(--primary-strong));
+    color: rgb(var(--primary-contrast));
+    font-weight: 700;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: top 0.2s ease;
+  }
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    top: 8px;
+    outline-offset: 2px;
+  }
+
+  /* ---- Nav --------------------------------------------------------------- */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--nav-bg);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgb(var(--border));
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+  }
+  .logo-mark {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, rgb(var(--accent)), rgb(var(--primary)));
+    box-shadow: inset 0 -2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .menu {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .menu a {
+    padding: 10px 12px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    color: rgb(var(--text));
+  }
+  .menu a.active,
+  .menu a:hover {
+    background: rgb(var(--card));
+    box-shadow: var(--shadow);
+    text-decoration: none;
+  }
+
+  .theme-toggle {
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+    color: rgb(var(--text));
+  }
+  .theme-toggle:hover {
+    background: rgb(var(--card));
+    opacity: 1;
+  }
+  [data-theme='dark'] .theme-toggle {
+    opacity: 0.7;
+  }
+
+  .social-link {
+    padding: 8px 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+    color: rgb(var(--text));
+  }
+  .social-link:hover {
+    background: rgb(var(--card));
+    opacity: 1;
+    text-decoration: none;
+  }
+  [data-theme='dark'] .social-link {
+    opacity: 0.7;
+  }
+  .social-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .burger {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+  }
+  .burger span {
+    width: 24px;
+    height: 2px;
+    background: rgb(var(--text));
+    transition: all 0.3s ease;
+  }
+  .burger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(4.25px, 4.25px);
+  }
+  .burger.active span:nth-child(2) {
+    opacity: 0;
+  }
+  .burger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(4.25px, -4.25px);
+  }
+
+  @media (max-width: 900px) {
+    .burger {
+      display: flex;
+    }
+    .menu {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background: rgb(var(--card));
+      backdrop-filter: blur(10px);
+      flex-direction: column;
+      padding: 16px;
+      gap: 8px;
+      display: none;
+      box-shadow: var(--shadow);
+      border-bottom: 1px solid rgb(var(--border));
+    }
+    .menu.active {
+      display: flex;
+    }
+    .menu a:not(.social-link) {
+      width: 100%;
+      text-align: center;
+    }
+    .menu .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    .menu .theme-toggle {
+      width: 100%;
+      justify-content: center;
+      margin-top: 8px;
+    }
+  }
+
+  /* ---- Hero -------------------------------------------------------------- */
+  /*
+   * Milestone 4 swaps the legacy CSS `background-image: url('/assets/hero.jpg')`
+   * for an absolute-positioned `<Image>` (Astro / Sharp) inside the section.
+   * That gives us responsive `srcset`, AVIF/WebP fallbacks, and a delivered
+   * weight under 300 KB on modern browsers (down from a flat 2.4 MB JPEG).
+   *
+   * The visual stacking order is:
+   *   1. `.hero-image` — the optimized photo (z-index: 0)
+   *   2. `::before`    — theme-aware gradient overlay (`--hero-overlay`)
+   *   3. `::after`     — two soft brand-color radial gradients (legacy look)
+   *   4. `.container`  — heading + subhead text (z-index: 1)
+   *
+   * The hero is the LCP candidate on every page that uses it, so the `<Image>`
+   * sets `loading="eager"` + `fetchpriority="high"` (declared in `Hero.astro`).
+   */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 72px 0 36px;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    isolation: isolate;
+  }
+  .hero .hero-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 65%;
+    z-index: -2;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--hero-overlay);
+    z-index: -1;
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(1200px 400px at 10% -20%, var(--hero-gradient-1), transparent),
+      radial-gradient(800px 300px at 90% 0%, var(--hero-gradient-2), transparent);
+    z-index: -1;
+    pointer-events: none;
+  }
+  .hero .container {
+    position: relative;
+    z-index: 1;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 42px);
+    margin: 0 0 8px;
+    letter-spacing: -0.02em;
+    /* Use the theme-aware text token instead of forcing #0f172a — fixes the
+     * dark-mode contrast regression. */
+    color: rgb(var(--text));
+  }
+  .hero p {
+    color: rgb(var(--text));
+    margin: 8px 0 0;
+    max-width: 60ch;
+    background: rgb(var(--card) / 0.6);
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+
+  /* ---- Layout grids ----------------------------------------------------- */
+  .grid {
+    display: grid;
+    gap: 32px;
+  }
+  .grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (max-width: 900px) {
+    .grid-3 {
+      grid-template-columns: 1fr;
+    }
+    .grid-2 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---- Card / KPI / Section -------------------------------------------- */
+  .card {
+    background: rgb(var(--card));
+    border: 1px solid rgb(var(--border));
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    transition:
+      background-color 0.3s ease,
+      border-color 0.3s ease;
+  }
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+  @media (max-width: 900px) {
+    .kpis {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .kpi .num {
+    font-size: 32px;
+    font-weight: 800;
+  }
+  .kpi .label {
+    color: rgb(var(--muted));
+  }
+
+  .section {
+    margin-top: 48px;
+  }
+  .section:first-child {
+    margin-top: 0;
+  }
+  .section h2 {
+    font-size: 24px;
+    letter-spacing: -0.01em;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgb(var(--badge-bg));
+    border: 1px solid rgb(var(--border));
+    color: rgb(var(--text));
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-weight: 600;
+  }
+
+  /* ---- Call-to-action button ------------------------------------------- */
+  .cta {
+    display: inline-block;
+    /* Uses `--primary-strong` for WCAG 2.2 AA contrast — see token comment
+     * in the design-tokens block above. */
+    background: rgb(var(--primary-strong));
+    color: rgb(var(--primary-contrast));
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    box-shadow: 0 6px 16px var(--ring);
+    transition: all 0.2s ease;
+  }
+  .cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px var(--ring);
+    text-decoration: none;
+  }
+
+  /* ---- Footer ----------------------------------------------------------- */
+  .footer {
+    margin-top: 48px;
+    padding: 28px 0;
+    border-top: 1px solid rgb(var(--border));
+    color: rgb(var(--muted));
+    font-size: 14px;
+  }
+
+  /* ---- Partner / Board / Event ----------------------------------------- */
+  .partner {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .partner img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 1px solid rgb(var(--border));
+    background: rgb(var(--card));
+    padding: 10px;
+  }
+  .partner h4 {
+    margin: 0;
+    /* The PartnerCard wraps its content in an `<a>`, and the global `a { color }`
+     * rule resolves to `rgb(var(--primary))` — French Tech red. Inheriting that
+     * color on the partner name gives ~3.87:1 contrast on the white card and
+     * ~3.10:1 on the dark card, both below WCAG 2.2 AA's 4.5:1 floor. Force
+     * the heading back to the theme's text color so the partner name reads
+     * cleanly in both themes. The tagline already uses `--muted`. */
+    color: rgb(var(--text));
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+  @media (max-width: 900px) {
+    .board {
+      grid-template-columns: 1fr;
+    }
+  }
+  .board .person {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .board .person img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 12px;
+  }
+  /* Per-member grayscale flag, driven by the `grayscale` boolean in
+   * `src/content/board/*.md`. Replaces the legacy inline
+   * `style="filter: grayscale(100%)"` attributes carried over from
+   * `about.html`. */
+  .board .person.is-grayscale img {
+    filter: grayscale(100%);
+  }
+  .board .person h4 {
+    margin: 8px 0 4px;
+  }
+
+  /* ---- Events page Luma iframe wrapper --------------------------------- */
+  /*
+   * Responsive container for the Luma calendar embed on `/events.html`.
+   * The legacy site shipped a fixed 600 px iframe that horizontal-scrolled
+   * below 768 px. We swap to an aspect-ratio container that scales with the
+   * viewport: ~3:4 on mobile (taller, gives the calendar room) and ~16:10
+   * on desktop. The iframe fills its parent absolutely so it never paints
+   * its own scrollbar.
+   */
+  .events-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    margin-top: 16px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgb(var(--border));
+    background: rgb(var(--card));
+  }
+  @media (min-width: 900px) {
+    .events-frame {
+      aspect-ratio: 16 / 10;
+    }
+  }
+  .events-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .event {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .event .date {
+    text-align: center;
+  }
+  .event .date .month {
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .event .date .day {
+    font-size: 28px;
+    font-weight: 800;
+  }
+
+  .note {
+    font-size: 14px;
+    color: rgb(var(--muted));
+  }
+}

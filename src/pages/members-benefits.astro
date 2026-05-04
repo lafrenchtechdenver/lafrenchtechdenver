@@ -1,0 +1,73 @@
+---
+/**
+ * `/members-benefits.html` — Members Benefits page.
+ *
+ * Milestone 4 promotes this page from a Milestone-1 placeholder to its real
+ * content: a hero, two side-by-side benefit cards (Individuals vs Companies),
+ * and a "Become a Member" CTA whose href is sourced from
+ * `src/content/site/social.json.membershipFormUrl`.
+ *
+ * Per the `route_global_constants_through_site_collection` instruction the
+ * Google Form URL is read from the `site` data collection — never hard-coded
+ * — so a single edit to `social.json` updates the home-page CTA and this CTA
+ * in lock-step.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getEntry } from 'astro:content';
+import Hero from '../components/Hero.astro';
+
+const siteEntry = await getEntry('site', 'social');
+if (!siteEntry) {
+  throw new Error(
+    "members-benefits.astro: missing 'social' entry in the `site` data collection " +
+      '(expected at src/content/site/social.json).',
+  );
+}
+const membershipFormUrl = siteEntry.data.membershipFormUrl;
+---
+
+<BaseLayout
+  title="Members Benefits — La French Tech Denver"
+  description="Benefits of joining La French Tech Denver for individuals and companies."
+>
+  <Hero
+    title="Members Benefits"
+    subtitle="What you get out of joining the La French Tech Denver community."
+  />
+
+  <div class="container">
+    <div class="grid grid-2">
+      <div class="card">
+        <h2>For Individuals</h2>
+        <ul>
+          <li>Free entry to all our community events</li>
+          <li>Direct access to a curated network of founders, operators, and investors</li>
+          <li>French-speaking peer support across the Denver / Boulder ecosystem</li>
+          <li>Mentorship pairings with experienced French-speaking entrepreneurs</li>
+          <li>Job, talent, and partnership intros within the community</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>For Companies</h2>
+        <ul>
+          <li>Promotion of your job openings and events to the membership</li>
+          <li>Sponsorship opportunities at our flagship gatherings</li>
+          <li>Connections to French startups expanding into the US market</li>
+          <li>Visibility on our companies-and-sponsors page and social channels</li>
+          <li>Co-branded events and customized matchmaking for your team</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section card">
+      <h2>Join us</h2>
+      <p>
+        Membership is free for individuals and powered by your participation. Fill out the short
+        form and we'll get you onboarded.
+      </p>
+      <p style="margin-top: 24px;">
+        <a class="cta" href={membershipFormUrl} target="_blank" rel="noopener"> Become a Member </a>
+      </p>
+    </div>
+  </div>
+</BaseLayout>

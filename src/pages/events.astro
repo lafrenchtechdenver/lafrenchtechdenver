@@ -1,0 +1,56 @@
+---
+/**
+ * `/events.html` — Events page.
+ *
+ * Milestone 4 promotes this page from a Milestone-1 placeholder to its real
+ * content: a hero followed by the embedded Luma calendar.
+ *
+ * The iframe `src` is read from the `site` data collection
+ * (`src/content/site/social.json.lumaCalendarUrl`) per the
+ * `route_global_constants_through_site_collection` instruction — never
+ * hard-coded. A future calendar URL change is then a single-file edit to
+ * `social.json` rather than a hunt across pages and tests.
+ *
+ * The legacy embed had a fixed 600 px iframe height that horizontal-scrolled
+ * below 768 px. We wrap the iframe in a responsive `aspect-ratio` container
+ * styled by `.events-frame` in `src/styles/global.css` so the iframe
+ * gracefully scales on mobile.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getEntry } from 'astro:content';
+import Hero from '../components/Hero.astro';
+
+const siteEntry = await getEntry('site', 'social');
+if (!siteEntry) {
+  throw new Error(
+    "events.astro: missing 'social' entry in the `site` data collection " +
+      '(expected at src/content/site/social.json).',
+  );
+}
+const lumaCalendarUrl = siteEntry.data.lumaCalendarUrl;
+---
+
+<BaseLayout
+  title="Events — La French Tech Denver"
+  description="Upcoming La French Tech Denver events."
+>
+  <Hero title="Events" subtitle="Meetups, workshops, and gatherings — coming up next." />
+
+  <div class="container">
+    <div class="section card">
+      <h2>Upcoming events</h2>
+      <p>
+        Our calendar is hosted on Luma. RSVP to any event below to receive the venue, agenda, and
+        reminders.
+      </p>
+      <div class="events-frame" data-testid="events-iframe-container">
+        <iframe
+          src={lumaCalendarUrl}
+          title="La French Tech Denver — Luma calendar"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

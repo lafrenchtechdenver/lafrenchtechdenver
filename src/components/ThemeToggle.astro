@@ -1,0 +1,52 @@
+---
+/**
+ * Theme toggle button.
+ *
+ * The `data-theme` attribute is set up *before* this component renders by the
+ * synchronous `<script is:inline>` in `BaseLayout.astro`'s `<head>` — that's
+ * what prevents a flash of unstyled theme on page load. This component owns
+ * only the click interaction:
+ *   - flip `data-theme` between `light` and `dark`
+ *   - mirror the new value into `localStorage.theme` (wrapped in try/catch
+ *     because Safari private mode + locked-down user agents throw)
+ *   - update the ◐ / ◑ icon glyph
+ *
+ * The icon's first-paint state is also computed here from the already-set
+ * `data-theme` attribute, so a dark-mode user sees ◑ on load (not the
+ * default ◐ markup).
+ *
+ * Convention: keep the bootstrap inline in <head>, keep the toggle JS here.
+ * See `/l2l/mcode/instructions/keep_theme_bootstrap_inline_in_head.md`.
+ */
+---
+
+<button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle theme">◐</button>
+
+<script is:inline>
+  (function () {
+    const toggle = document.getElementById('theme-toggle');
+    if (!toggle) return;
+
+    function updateIcon(theme) {
+      toggle.innerHTML = theme === 'light' ? '◐' : '◑';
+    }
+
+    // Reflect the current state in the icon on first paint — the inline-head
+    // bootstrap has already set `data-theme` by the time this runs.
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    updateIcon(current);
+
+    toggle.addEventListener('click', function () {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      try {
+        localStorage.setItem('theme', newTheme);
+      } catch {
+        // localStorage may be disabled (Safari private mode, etc.) —
+        // theme will reset on reload but the in-tab toggle still works.
+      }
+      updateIcon(newTheme);
+    });
+  })();
+</script>
