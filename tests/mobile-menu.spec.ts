@@ -69,21 +69,18 @@ test.describe('Mobile Menu', () => {
     await page.click('.burger');
     await expect(page.locator('#menu')).toHaveClass(/active/);
 
-    // Simulate a click on the document outside the nav by dispatching a click
-    // event directly on the document body. At mobile viewport the expanded menu
-    // can cover the visible area, so we use dispatchEvent to target a point
-    // that is guaranteed to be outside the .nav element.
-    await page.evaluate(() => {
-      // Dispatch a native click event at a point outside the nav element.
-      // The Nav.astro outside-click handler checks `!nav.contains(event.target)`.
-      const heroHeading = document.querySelector('.hero h1') as HTMLElement | null;
-      if (heroHeading) {
-        heroHeading.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-      } else {
-        // Fallback: dispatch on the body itself (also outside .nav).
-        document.body.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-      }
-    });
+    // Click somewhere outside .nav using a real mouse click. Synthetic
+    // dispatchEvent skips hit-testing and would falsely succeed even if the
+    // listener were broken — see use_real_input_for_outside-click_tests.md.
+    // The .hero <h1> sits well below the sticky nav at mobile width, so its
+    // bounding box is guaranteed to be outside the .nav element.
+    const heroHeading = page.locator('.hero h1');
+    await expect(heroHeading).toBeVisible();
+    const box = await heroHeading.boundingBox();
+    if (!box) {
+      throw new Error('Could not resolve hero heading bounding box');
+    }
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 
     await expect(page.locator('#menu')).not.toHaveClass(/active/);
   });

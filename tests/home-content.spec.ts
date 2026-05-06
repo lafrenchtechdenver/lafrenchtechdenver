@@ -1,4 +1,7 @@
 import { expect, test } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, resolve } from 'node:path';
 
 /**
  * home-content.spec.ts — Home page content verification.
@@ -9,10 +12,27 @@ import { expect, test } from '@playwright/test';
  * 3. Google Form "Become a Member" CTA with correct URL.
  * 4. All 4 KPI cards (13 Companies, 262 People, 5 Nationalities, 33% Women).
  * 5. All 6 Friends & Partners cards each with an image and an outbound link.
+ *
+ * The membership form URL is read from `src/content/site/social.json` at
+ * test-load time so the assertion stays in sync with the single source of
+ * truth — see the `route_global_constants_through_site_collection.md`
+ * instruction.
  */
 
-const MEMBERSHIP_FORM_URL =
-  'https://docs.google.com/forms/d/1tpHwjsberWYWbVuiEy9S6CP44k0gxJuaFi9ha5QBIqM/viewform';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const SOCIAL_JSON = resolve(__dirname, '..', 'src', 'content', 'site', 'social.json');
+
+interface SocialJson {
+  linkedinUrl: string;
+  facebookUrl: string;
+  contactEmail: string;
+  membershipFormUrl: string;
+  lumaCalendarUrl: string;
+}
+
+const site: SocialJson = JSON.parse(readFileSync(SOCIAL_JSON, 'utf-8'));
+const MEMBERSHIP_FORM_URL = site.membershipFormUrl;
 
 const EXPECTED_KPIS: Array<{ value: string; label: string }> = [
   { value: '13', label: 'Companies' },
