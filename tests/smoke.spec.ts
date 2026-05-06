@@ -33,7 +33,9 @@ test('home page renders hero + full nav', async ({ page }) => {
 
 test('every legacy URL resolves 200', async ({ page }) => {
   for (const link of EXPECTED_NAV_LINKS) {
-    const response = await page.goto(link.href);
+    // Use domcontentloaded to avoid waiting for the Luma iframe's React app on
+    // /events.html, which holds the page's load event open for ~30 s.
+    const response = await page.goto(link.href, { waitUntil: 'domcontentloaded' });
     expect(response?.status(), `GET ${link.href} should 200`).toBeLessThan(400);
   }
 });
