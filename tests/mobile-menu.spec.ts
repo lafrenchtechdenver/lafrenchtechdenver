@@ -69,23 +69,59 @@ test.describe('Mobile Menu', () => {
     await page.click('.burger');
     await expect(page.locator('#menu')).toHaveClass(/active/);
 
-    // Simulate a click on the document outside the nav by dispatching a click
-    // event directly on the document body. At mobile viewport the expanded menu
-    // can cover the visible area, so we use dispatchEvent to target a point
-    // that is guaranteed to be outside the .nav element.
-    await page.evaluate(() => {
-      // Dispatch a native click event at a point outside the nav element.
-      // The Nav.astro outside-click handler checks `!nav.contains(event.target)`.
-      const heroHeading = document.querySelector('.hero h1') as HTMLElement | null;
-      if (heroHeading) {
-        heroHeading.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-      } else {
-        // Fallback: dispatch on the body itself (also outside .nav).
-        document.body.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-      }
-    });
+    // Use real input (page.mouse.click) to click outside the nav. Synthetic
+    // dispatchEvent calls bypass hit-testing and listener capture, producing
+    // false positives — see use_real_input_for_outside-click_tests.md.
+    // Click at the bottom-center of the viewport, which is always outside the
+    // sticky nav bar at a 375×812 mobile viewport.
+    await page.mouse.click(187, 700);
 
     await expect(page.locator('#menu')).not.toHaveClass(/active/);
+  });
+
+  test('burger button has aria-controls="menu"', async ({ page }) => {
+    await page.goto('/');
+
+    const burger = page.locator('#burger-button');
+    await expect(burger).toHaveAttribute('aria-controls', 'menu');
+  });
+
+  test('aria-expanded is false initially on burger button', async ({ page }) => {
+    await page.goto('/');
+
+    const burger = page.locator('#burger-button');
+    await expect(burger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('aria-expanded is true after burger click opens menu', async ({ page }) => {
+    await page.goto('/');
+
+    await page.click('#burger-button');
+
+    const burger = page.locator('#burger-button');
+    await expect(burger).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  test('aria-expanded returns to false after second burger click', async ({ page }) => {
+    await page.goto('/');
+
+    await page.click('#burger-button');
+    await expect(page.locator('#burger-button')).toHaveAttribute('aria-expanded', 'true');
+
+    await page.click('#burger-button');
+    await expect(page.locator('#burger-button')).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('aria-expanded returns to false after outside click', async ({ page }) => {
+    await page.goto('/');
+
+    await page.click('#burger-button');
+    await expect(page.locator('#burger-button')).toHaveAttribute('aria-expanded', 'true');
+
+    // Real mouse click outside the nav (see use_real_input_for_outside-click_tests.md).
+    await page.mouse.click(187, 700);
+
+    await expect(page.locator('#burger-button')).toHaveAttribute('aria-expanded', 'false');
   });
 
   test('all six nav links are accessible in the open mobile menu', async ({ page }) => {
