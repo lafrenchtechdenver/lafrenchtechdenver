@@ -396,7 +396,8 @@ test.describe('Nav active state', () => {
 
   for (const { url, activeHref } of PAGE_ACTIVE_PAIRS) {
     test(`${url}: nav link for "${activeHref}" has .active class`, async ({ page }) => {
-      await page.goto(url);
+      // /events.html keeps the load event open ~30 s due to the Luma iframe.
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
       const activeLink = page.locator(`#menu a[href="${activeHref}"]`);
       await expect(activeLink).toHaveClass(/active/);
     });
@@ -404,7 +405,7 @@ test.describe('Nav active state', () => {
 
   for (const { url } of PAGE_ACTIVE_PAIRS) {
     test(`${url}: only one nav link is active at a time`, async ({ page }) => {
-      await page.goto(url);
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
       const activeLinks = page.locator('#menu a.active');
       await expect(activeLinks).toHaveCount(1);
     });
@@ -485,7 +486,8 @@ test.describe('prefers-reduced-motion', () => {
 test.describe('Social links on all pages', () => {
   for (const { url } of ALL_PAGES) {
     test(`LinkedIn link present on ${url}`, async ({ page }) => {
-      await page.goto(url);
+      // /events.html keeps the load event open ~30 s due to the Luma iframe.
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
       const linkedin = page.locator(
         'a[href="https://www.linkedin.com/company/denver-french-tech"]',
       );
@@ -493,7 +495,7 @@ test.describe('Social links on all pages', () => {
     });
 
     test(`Facebook link present on ${url}`, async ({ page }) => {
-      await page.goto(url);
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
       const facebook = page.locator(
         'a[href="https://www.facebook.com/groups/lafrenchtechdenver/"]',
       );
@@ -501,7 +503,7 @@ test.describe('Social links on all pages', () => {
     });
 
     test(`Mailto link present on ${url}`, async ({ page }) => {
-      await page.goto(url);
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
       const email = page.locator('a[href="mailto:contact@lafrenchtechdenver.com"]');
       await expect(email).toBeVisible();
     });

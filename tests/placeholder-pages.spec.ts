@@ -30,18 +30,20 @@ const SECONDARY_PAGES: Array<{ url: string; h1: string }> = [
 test.describe('Secondary page shells', () => {
   for (const { url, h1 } of SECONDARY_PAGES) {
     test(`${url} returns 200`, async ({ page }) => {
-      const response = await page.goto(url);
+      // /events.html keeps the `load` event open ~30 s due to the Luma iframe;
+      // domcontentloaded is sufficient for HTTP status and structural assertions.
+      const response = await page.goto(url, { waitUntil: 'domcontentloaded' });
       expect(response?.status(), `GET ${url} should return 200`).toBeLessThan(400);
     });
 
     test(`${url} renders <h1>${h1}</h1>`, async ({ page }) => {
-      await page.goto(url);
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
       const heading = page.getByRole('heading', { name: h1, level: 1 });
       await expect(heading, `<h1>${h1}</h1> should be visible on ${url}`).toBeVisible();
     });
 
     test(`${url} renders via BaseLayout (has nav + footer)`, async ({ page }) => {
-      await page.goto(url);
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
 
       // Nav is always present — check for the menu element rendered by Nav.astro.
       await expect(page.locator('#menu')).toBeVisible();

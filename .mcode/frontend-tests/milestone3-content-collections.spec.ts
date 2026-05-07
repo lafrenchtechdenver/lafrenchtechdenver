@@ -273,14 +273,18 @@ test.describe("Navigation — 6 links render correctly on all pages", () => {
     "/resources.html",
   ]) {
     test(`nav has 6 page links on ${page_url}`, async ({ page }) => {
-      await page.goto(page_url);
+      // events.html embeds a Luma iframe whose React app keeps the `load` event
+      // open for ~30 s; domcontentloaded is sufficient for nav assertions.
+      await page.goto(page_url, { waitUntil: "domcontentloaded" });
       const navPageLinks = page.locator('nav a[href^="/"]');
       // Expect exactly 6 internal nav links
       await expect(navPageLinks).toHaveCount(6);
     });
 
     test(`all nav link hrefs are correct on ${page_url}`, async ({ page }) => {
-      await page.goto(page_url);
+      // events.html embeds a Luma iframe whose React app keeps the `load` event
+      // open for ~30 s; domcontentloaded is sufficient for nav assertions.
+      await page.goto(page_url, { waitUntil: "domcontentloaded" });
       for (const link of NAV_LINKS) {
         const el = page.locator(`nav a[href="${link.href}"]`);
         await expect(el).toHaveCount(1);

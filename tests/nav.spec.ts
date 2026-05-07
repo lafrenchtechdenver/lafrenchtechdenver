@@ -38,7 +38,9 @@ const SOCIAL_LINKS = {
 test.describe('Navigation', () => {
   for (const url of ALL_PAGES) {
     test(`all six nav links present on ${url}`, async ({ page }) => {
-      const resp = await page.goto(url);
+      // /events.html embeds a Luma iframe whose React app keeps the `load` event
+      // open for ~30 s on every visit; domcontentloaded is sufficient here.
+      const resp = await page.goto(url, { waitUntil: 'domcontentloaded' });
       expect(resp?.status(), `GET ${url} should return 200`).toBeLessThan(400);
 
       for (const link of NAV_LINKS) {
@@ -71,7 +73,7 @@ test.describe('Navigation', () => {
 
   for (const url of ALL_PAGES) {
     test(`social links correct on ${url}`, async ({ page }) => {
-      await page.goto(url);
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
 
       const linkedin = page.locator(`a[href="${SOCIAL_LINKS.linkedin}"]`);
       await expect(linkedin, 'LinkedIn link should be present').toBeVisible();
@@ -86,7 +88,7 @@ test.describe('Navigation', () => {
 
   for (const url of ALL_PAGES) {
     test(`footer copyright present on ${url}`, async ({ page }) => {
-      await page.goto(url);
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
       const footer = page.locator('footer');
       await expect(footer).toBeVisible();
       // Year is dynamic — match the pattern rather than a hard-coded year.
