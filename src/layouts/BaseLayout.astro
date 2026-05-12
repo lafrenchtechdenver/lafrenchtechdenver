@@ -15,6 +15,8 @@
  *   - Focus rings, reduced-motion handling, and hero contrast fixes all live
  *     in `global.css`; this layout owns only the structure that hosts them.
  */
+import interLatinWoff2 from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import bricolageLatinWoff2 from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2?url';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
@@ -41,6 +43,9 @@ const currentPath = Astro.url.pathname;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Preload critical variable fonts so metrics settle before first paint (reduces swap “jitter”). -->
+    <link rel="preload" href={interLatinWoff2} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={bricolageLatinWoff2} as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />

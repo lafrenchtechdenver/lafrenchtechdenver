@@ -68,8 +68,8 @@
 
     /* Composite tokens that need explicit alpha or gradient syntax. */
     --ring: rgba(239, 65, 53, 0.2);
-    --shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
-    --nav-bg: rgba(255, 255, 255, 0.7);
+    --shadow: 0 1px 2px rgb(2 6 23 / 0.05), 0 14px 44px -10px rgb(2 6 23 / 0.14);
+    --nav-bg: rgba(255, 255, 255, 0.78);
     --hero-gradient-1: rgba(0, 85, 164, 0.08);
     --hero-gradient-2: rgba(239, 65, 53, 0.08);
     --hero-overlay: linear-gradient(
@@ -95,8 +95,8 @@
     --badge-bg: 30 41 59;
 
     --ring: rgba(239, 65, 53, 0.3);
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    --nav-bg: rgba(30, 41, 59, 0.8);
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.25), 0 18px 48px -12px rgb(0 0 0 / 0.5);
+    --nav-bg: rgba(30, 41, 59, 0.82);
     --hero-gradient-1: rgba(59, 130, 246, 0.12);
     --hero-gradient-2: rgba(239, 65, 53, 0.12);
     --hero-overlay: linear-gradient(180deg, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.7) 100%);
@@ -112,16 +112,53 @@
     padding: 0;
   }
 
+  /* Reserve space for the vertical scrollbar so layout width does not shift
+   * when the document becomes scrollable (common “whole page jumps” feel). */
+  html {
+    scrollbar-gutter: stable;
+  }
+
   body {
     /* `font-sans` resolves to the Inter Variable + system-ui fallback chain
      * declared in tailwind.config.mjs. */
     @apply font-sans antialiased;
-    background: rgb(var(--bg)) url('/pattern.svg') center/120px repeat;
+    background-color: rgb(var(--bg));
+    /* Soft mesh: French blue (sky) + brand red + cool slate (high country),
+     * over a repeating pattern suggesting peaks + tricolor accents. */
+    background-image:
+      radial-gradient(1200px 620px at 50% -220px, rgb(var(--accent) / 0.13) 0%, transparent 58%),
+      radial-gradient(820px 520px at 100% 0%, rgb(var(--primary) / 0.08) 0%, transparent 52%),
+      radial-gradient(720px 460px at 0% 100%, rgb(100 116 139 / 0.07) 0%, transparent 55%),
+      url('/pattern.svg');
+    background-size: auto, auto, auto, 200px 200px;
+    background-position: top center, 100% 0%, 0% 100%, center;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+    /* `fixed` backgrounds repaint with compositing and can feel “jumpy” next
+     * to font-loaded text; `scroll` keeps layers stable on load. */
+    background-attachment: scroll, scroll, scroll, scroll;
     color: rgb(var(--text));
-    line-height: 1.6;
+    line-height: 1.65;
+    font-size: 1.0625rem;
+    font-feature-settings:
+      'cv02' 1,
+      'cv03' 1,
+      'ss01' 1;
+    text-rendering: optimizeLegibility;
     transition:
       background-color 0.3s ease,
       color 0.3s ease;
+  }
+
+  html[data-theme='dark'] body {
+    background-image:
+      radial-gradient(1000px 540px at 50% -200px, rgb(var(--accent) / 0.2) 0%, transparent 58%),
+      radial-gradient(700px 460px at 100% 0%, rgb(var(--primary) / 0.11) 0%, transparent 52%),
+      radial-gradient(640px 420px at 0% 100%, rgb(148 163 184 / 0.09) 0%, transparent 55%),
+      url('/pattern.svg');
+    background-size: auto, auto, auto, 200px 200px;
+    background-position: top center, 100% 0%, 0% 100%, center;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+    background-attachment: scroll, scroll, scroll, scroll;
   }
 
   h1,
@@ -133,7 +170,36 @@
     /* Display font — Bricolage Grotesque Variable, falls back through the
      * existing system-ui chain. */
     @apply font-display;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.025em;
+    font-weight: 650;
+    line-height: 1.2;
+  }
+
+  /* Headings must not inherit body `font-size` — otherwise card titles (h2)
+   * match list copy and the hierarchy collapses (e.g. Members Benefits). */
+  h2 {
+    font-size: clamp(1.55rem, 1.2rem + 1.15vw, 2.125rem);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+  }
+
+  h3 {
+    font-size: clamp(1.22rem, 1.05rem + 0.55vw, 1.5rem);
+    font-weight: 650;
+    letter-spacing: -0.03em;
+  }
+
+  h4,
+  h5,
+  h6 {
+    font-size: clamp(1.03rem, 0.98rem + 0.2vw, 1.125rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  main {
+    padding-bottom: clamp(32px, 6vw, 72px);
   }
 
   a {
@@ -168,6 +234,10 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+
+    body {
+      background-attachment: scroll, scroll, scroll, scroll !important;
+    }
   }
 }
 
@@ -177,9 +247,11 @@
 
 @layer components {
   .container {
-    max-width: 1100px;
+    width: min(1180px, 100% - clamp(24px, 6vw, 56px));
+    max-width: 1180px;
     margin: 0 auto;
-    padding: 24px;
+    padding-inline: clamp(16px, 4vw, 28px);
+    padding-block: clamp(20px, 3vw, 32px);
   }
 
   /* ---- Skip-to-content link (a11y baseline) ----------------------------- */
@@ -210,8 +282,21 @@
     top: 0;
     z-index: 50;
     background: var(--nav-bg);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgb(var(--border));
+    backdrop-filter: blur(16px) saturate(1.2);
+    border-bottom: 1px solid rgb(var(--border) / 0.65);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.45) inset;
+  }
+  [data-theme='dark'] .nav {
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset;
+  }
+  .nav .container {
+    padding-block: 12px;
+  }
+  .hero .container {
+    padding-block: 0;
+  }
+  .footer .container {
+    padding-block: 0;
   }
   .nav-inner {
     display: flex;
@@ -219,12 +304,30 @@
     gap: 20px;
     justify-content: space-between;
     flex-wrap: wrap;
+    min-height: 64px;
   }
   .logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     font-weight: 700;
+  }
+  a.logo {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  a.logo:hover,
+  a.logo:focus,
+  a.logo:focus-visible {
+    color: inherit;
+    text-decoration: none;
+  }
+  .logo span {
+    @apply font-display;
+    font-size: clamp(1rem, 2.5vw, 1.125rem);
+    letter-spacing: -0.03em;
+    color: rgb(var(--text));
   }
   .logo-mark {
     width: 14px;
@@ -241,16 +344,19 @@
     align-items: center;
   }
   .menu a {
-    padding: 10px 12px;
-    border-radius: 12px;
+    padding: 10px 14px;
+    border-radius: 999px;
     transition: all 0.2s ease;
     color: rgb(var(--text));
+    font-weight: 500;
+    font-size: 0.9375rem;
   }
   .menu a.active,
   .menu a:hover {
     background: rgb(var(--card));
     box-shadow: var(--shadow);
     text-decoration: none;
+    color: rgb(var(--accent));
   }
 
   .theme-toggle {
@@ -379,8 +485,8 @@
   .hero {
     position: relative;
     overflow: hidden;
-    padding: 72px 0 36px;
-    min-height: 280px;
+    padding: clamp(72px, 12vw, 112px) 0 clamp(40px, 6vw, 56px);
+    min-height: min(52vh, 420px);
     display: flex;
     align-items: center;
     isolation: isolate;
@@ -417,27 +523,39 @@
     z-index: 1;
   }
   .hero h1 {
-    font-size: clamp(28px, 5vw, 42px);
-    margin: 0 0 8px;
-    letter-spacing: -0.02em;
+    font-size: clamp(2rem, 4.2vw + 1rem, 3.25rem);
+    margin: 0 0 12px;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+    max-width: 18ch;
     /* Use the theme-aware text token instead of forcing #0f172a — fixes the
      * dark-mode contrast regression. */
     color: rgb(var(--text));
+    text-wrap: balance;
   }
   .hero p {
     color: rgb(var(--text));
-    margin: 8px 0 0;
-    max-width: 60ch;
-    background: rgb(var(--card) / 0.6);
-    padding: 8px 12px;
-    border-radius: 6px;
+    margin: 12px 0 0;
+    max-width: 52ch;
+    background: rgb(var(--card) / 0.55);
+    backdrop-filter: blur(14px) saturate(1.15);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
+    padding: 12px 18px;
+    border-radius: 14px;
+    border: 1px solid rgb(var(--border) / 0.55);
+    box-shadow: 0 8px 32px rgb(2 6 23 / 0.06);
     display: inline-block;
+    font-size: clamp(1rem, 0.35vw + 0.95rem, 1.125rem);
+    line-height: 1.55;
+  }
+  [data-theme='dark'] .hero p {
+    box-shadow: 0 8px 32px rgb(0 0 0 / 0.25);
   }
 
   /* ---- Layout grids ----------------------------------------------------- */
   .grid {
     display: grid;
-    gap: 32px;
+    gap: clamp(24px, 4vw, 40px);
   }
   .grid-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -456,42 +574,91 @@
 
   /* ---- Card / KPI / Section -------------------------------------------- */
   .card {
-    background: rgb(var(--card));
-    border: 1px solid rgb(var(--border));
-    border-radius: 18px;
+    background: rgb(var(--card) / 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgb(var(--border) / 0.85);
+    border-radius: 22px;
     box-shadow: var(--shadow);
-    padding: 20px;
+    padding: clamp(22px, 3vw, 28px);
     transition:
       background-color 0.3s ease,
-      border-color 0.3s ease;
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
   }
   .kpis {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
+    gap: clamp(14px, 2vw, 20px);
   }
   @media (max-width: 900px) {
     .kpis {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
+  .kpi.card {
+    border-left: 3px solid rgb(var(--accent));
+  }
   .kpi .num {
-    font-size: 32px;
+    font-size: clamp(1.75rem, 3vw, 2.125rem);
     font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(
+      120deg,
+      rgb(var(--accent)) 0%,
+      rgb(var(--primary)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
   .kpi .label {
     color: rgb(var(--muted));
   }
 
   .section {
-    margin-top: 48px;
+    margin-top: clamp(40px, 6vw, 64px);
   }
   .section:first-child {
     margin-top: 0;
   }
   .section h2 {
-    font-size: 24px;
-    letter-spacing: -0.01em;
+    margin-top: 0;
+    margin-bottom: 0.45em;
+  }
+
+  .card h2 {
+    margin: 0 0 0.7em;
+  }
+
+  .card ul,
+  .card ol {
+    margin: 0;
+    padding-left: 1.5em;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgb(var(--text));
+    list-style-position: outside;
+  }
+
+  .card ul > li::marker {
+    color: rgb(var(--accent));
+    font-size: 1.15em;
+  }
+
+  .card ol > li::marker {
+    color: rgb(var(--accent));
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card li {
+    padding-block: 0.15em;
+    padding-inline-start: 0.15em;
+  }
+
+  .card li + li {
+    margin-top: 0.45em;
   }
 
   .badge {
@@ -499,11 +666,12 @@
     align-items: center;
     gap: 8px;
     background: rgb(var(--badge-bg));
-    border: 1px solid rgb(var(--border));
+    border: 1px solid rgb(var(--border) / 0.9);
     color: rgb(var(--text));
     border-radius: 999px;
-    padding: 6px 12px;
+    padding: 8px 14px;
     font-weight: 600;
+    font-size: 0.875rem;
   }
 
   /* ---- Call-to-action button ------------------------------------------- */
@@ -513,10 +681,12 @@
      * in the design-tokens block above. */
     background: rgb(var(--primary-strong));
     color: rgb(var(--primary-contrast));
-    padding: 12px 16px;
-    border-radius: 12px;
+    padding: 14px 22px;
+    border-radius: 999px;
     font-weight: 700;
-    box-shadow: 0 6px 16px var(--ring);
+    font-size: 0.9375rem;
+    letter-spacing: 0.01em;
+    box-shadow: 0 6px 20px var(--ring);
     transition: all 0.2s ease;
   }
   .cta:hover {
@@ -527,11 +697,12 @@
 
   /* ---- Footer ----------------------------------------------------------- */
   .footer {
-    margin-top: 48px;
-    padding: 28px 0;
-    border-top: 1px solid rgb(var(--border));
+    margin-top: clamp(48px, 8vw, 88px);
+    padding: 36px 0 40px;
+    border-top: 1px solid rgb(var(--border) / 0.75);
     color: rgb(var(--muted));
-    font-size: 14px;
+    font-size: 0.9375rem;
+    background: linear-gradient(180deg, transparent 0%, rgb(var(--card) / 0.35) 100%);
   }
 
   /* ---- Partner / Board / Event ----------------------------------------- */
@@ -608,7 +779,7 @@
     width: 100%;
     aspect-ratio: 4 / 5;
     margin-top: 16px;
-    border-radius: 18px;
+    border-radius: 22px;
     overflow: hidden;
     border: 1px solid rgb(var(--border));
     background: rgb(var(--card));

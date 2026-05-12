@@ -28,9 +28,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    // Build first so preview has something to serve; `pnpm preview` itself
+    // Build first so preview has something to serve; `preview` itself
     // does not trigger a build in Astro.
-    command: 'pnpm build && pnpm preview',
+    command: 'npm run build && npm run preview',
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',

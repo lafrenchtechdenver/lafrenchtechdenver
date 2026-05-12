@@ -66,7 +66,7 @@ export default {
         card: 'var(--shadow)',
       },
       borderRadius: {
-        card: '18px',
+        card: '22px',
       },
     },
   },

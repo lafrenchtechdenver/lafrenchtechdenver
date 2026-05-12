@@ -44,7 +44,7 @@ function isActive(href: string): boolean {
 
 <header class="nav">
   <div class="container nav-inner">
-    <div class="logo">
+    <a class="logo" href="/index.html">
       {
         /*
         Intentional raw <img>. The brand mark is also the canonical OpenGraph
@@ -55,17 +55,19 @@ function isActive(href: string): boolean {
         and break every social-share preview pointing at the stable URL — so
         the file is kept under `public/assets/logos/` and rendered here as a
         small (51 KB) static asset. Documented in `MILESTONE.md` ("Risks").
+        The visible site title in the sibling <span> supplies the link name;
+        the image is decorative inside this control.
       */
       }
       <img
         src="/assets/logos/Logo_FT_Denver.png"
-        alt="La French Tech Denver logo"
+        alt=""
         width="40"
         height="40"
         style="height: 40px; width: auto;"
       />
       <span>La French Tech Denver</span>
-    </div>
+    </a>
     <button
       class="burger"
       type="button"
