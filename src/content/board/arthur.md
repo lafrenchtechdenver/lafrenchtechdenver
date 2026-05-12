@@ -4,4 +4,5 @@ role: Board Member — Software Engineer at Modelcode AI
 order: 5
 photo: ../../assets/board/arthur.jpg
 grayscale: true
+linkedinUrl: https://www.linkedin.com/in/arthurio/
 ---

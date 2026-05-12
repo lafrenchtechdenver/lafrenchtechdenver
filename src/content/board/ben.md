@@ -4,4 +4,5 @@ role: President — Head of Marketing & Event at Superteam
 order: 1
 photo: ../../assets/board/ben.jpeg
 grayscale: true
+linkedinUrl: https://www.linkedin.com/in/benoitbouteille/
 ---

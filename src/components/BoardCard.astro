@@ -1,6 +1,7 @@
 ---
 /**
- * Renders one board member as a `.card.person` block.
+ * Renders one board member as a `.card.person` block linking to their
+ * LinkedIn profile (photo, name, and role are inside the anchor).
  *
  * Replaces the hand-coded `<div class="card person">…</div>` blocks that lived
  * in the legacy `about.html`. The grayscale treatment is now expressed via the
@@ -25,15 +26,22 @@ interface Props {
   name: string;
   role: string;
   photo: ImageMetadata;
+  linkedinUrl: string;
   grayscale?: boolean;
 }
 
-const { name, role, photo, grayscale = true } = Astro.props;
+const { name, role, photo, linkedinUrl, grayscale = true } = Astro.props;
 
 const personClass = ['card', 'person', grayscale ? 'is-grayscale' : ''].filter(Boolean).join(' ');
 ---
 
-<div class={personClass} data-testid="board-card">
+<a
+  class={personClass}
+  href={linkedinUrl}
+  target="_blank"
+  rel="noopener noreferrer"
+  data-testid="board-card"
+>
   <Picture
     src={photo}
     alt={name}
@@ -47,4 +55,4 @@ const personClass = ['card', 'person', grayscale ? 'is-grayscale' : ''].filter(B
   />
   <h4>{name}</h4>
   <div class="note">{role}</div>
-</div>
+</a>

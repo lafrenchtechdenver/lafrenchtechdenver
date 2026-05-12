@@ -130,8 +130,16 @@
       radial-gradient(820px 520px at 100% 0%, rgb(var(--primary) / 0.08) 0%, transparent 52%),
       radial-gradient(720px 460px at 0% 100%, rgb(100 116 139 / 0.07) 0%, transparent 55%),
       url('/pattern.svg');
-    background-size: auto, auto, auto, 200px 200px;
-    background-position: top center, 100% 0%, 0% 100%, center;
+    background-size:
+      auto,
+      auto,
+      auto,
+      200px 200px;
+    background-position:
+      top center,
+      100% 0%,
+      0% 100%,
+      center;
     background-repeat: no-repeat, no-repeat, no-repeat, repeat;
     /* `fixed` backgrounds repaint with compositing and can feel “jumpy” next
      * to font-loaded text; `scroll` keeps layers stable on load. */
@@ -155,8 +163,16 @@
       radial-gradient(700px 460px at 100% 0%, rgb(var(--primary) / 0.11) 0%, transparent 52%),
       radial-gradient(640px 420px at 0% 100%, rgb(148 163 184 / 0.09) 0%, transparent 55%),
       url('/pattern.svg');
-    background-size: auto, auto, auto, 200px 200px;
-    background-position: top center, 100% 0%, 0% 100%, center;
+    background-size:
+      auto,
+      auto,
+      auto,
+      200px 200px;
+    background-position:
+      top center,
+      100% 0%,
+      0% 100%,
+      center;
     background-repeat: no-repeat, no-repeat, no-repeat, repeat;
     background-attachment: scroll, scroll, scroll, scroll;
   }
@@ -603,11 +619,7 @@
     font-size: clamp(1.75rem, 3vw, 2.125rem);
     font-weight: 800;
     letter-spacing: -0.03em;
-    background: linear-gradient(
-      120deg,
-      rgb(var(--accent)) 0%,
-      rgb(var(--primary)) 100%
-    );
+    background: linear-gradient(120deg, rgb(var(--accent)) 0%, rgb(var(--primary)) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -763,6 +775,24 @@
   }
   .board .person h4 {
     margin: 8px 0 4px;
+  }
+
+  .board a.person {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .board a.person:hover,
+  .board a.person:focus,
+  .board a.person:focus-visible {
+    text-decoration: none;
+    color: inherit;
+  }
+  .board a.person h4 {
+    color: rgb(var(--text));
+  }
+  .board a.person .note {
+    color: rgb(var(--muted));
   }
 
   /* ---- Events page Luma iframe wrapper --------------------------------- */

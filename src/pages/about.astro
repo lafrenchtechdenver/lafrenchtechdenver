@@ -68,6 +68,7 @@ const board = (await getCollection('board')).sort((a, b) => a.data.order - b.dat
               role={member.data.role}
               photo={member.data.photo}
               grayscale={member.data.grayscale}
+              linkedinUrl={member.data.linkedinUrl}
             />
           ))
         }

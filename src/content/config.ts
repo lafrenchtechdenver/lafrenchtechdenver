@@ -4,8 +4,8 @@
  * Four collections power Milestone 3's data-driven UI:
  *
  *   - `board`    (content / Markdown) — one file per board member, frontmatter
- *                describes name, role, render order, portrait, and whether to
- *                apply the legacy grayscale treatment.
+ *                describes name, role, render order, portrait, LinkedIn URL,
+ *                and whether to apply the legacy grayscale treatment.
  *   - `partners` (content / Markdown) — one file per partner. `featuredOn`
  *                drives whether the partner appears on `/` ("home"), on
  *                `/companies-sponsors.html` ("sponsors"), or both.
@@ -33,6 +33,7 @@ const boardCollection = defineCollection({
       order: z.number().int().positive(),
       photo: image(),
       grayscale: z.boolean().default(true),
+      linkedinUrl: z.string().url(),
     }),
 });
 
