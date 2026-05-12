@@ -21,9 +21,10 @@
  * pseudo-element for the same reason.
  *
  * The hero image is the single Largest Contentful Paint candidate on every
- * page that uses this component, so it carries `loading="eager"` and
- * `fetchpriority="high"` to start downloading on the same connection as the
- * HTML rather than waiting for the lazy-load IntersectionObserver to fire.
+ * page that uses this component, so it carries `loading="eager"`,
+ * `fetchpriority="high"`, and `decoding="sync"`. `BaseLayout.astro` preloads the
+ * same AVIF `srcset` in `<head>` so each full-page navigation starts the image
+ * before font preloads.
  */
 import { Picture } from 'astro:assets';
 import heroImage from '../assets/hero.jpg';
@@ -47,6 +48,7 @@ const { title, subtitle } = Astro.props;
     sizes="100vw"
     loading="eager"
     fetchpriority="high"
+    decoding="sync"
     quality={70}
     formats={['avif', 'webp']}
   />

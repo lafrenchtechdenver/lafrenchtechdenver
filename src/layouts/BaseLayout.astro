@@ -15,11 +15,24 @@
  *   - Focus rings, reduced-motion handling, and hero contrast fixes all live
  *     in `global.css`; this layout owns only the structure that hosts them.
  */
+import { getImage } from 'astro:assets';
 import interLatinWoff2 from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 import bricolageLatinWoff2 from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2?url';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import heroImage from '../assets/hero.jpg';
 import '../styles/global.css';
+
+/** Same widths / format / quality as `Hero.astro` `<Picture>` — keeps preload URLs cache-identical to the hero. */
+const HERO_PRELOAD_WIDTHS = [640, 960, 1280, 1600] as const;
+const heroAvifSrcset = (
+  await Promise.all(
+    HERO_PRELOAD_WIDTHS.map(async (w) => {
+      const { src } = await getImage({ src: heroImage, width: w, format: 'avif', quality: 70 });
+      return `${src} ${w}w`;
+    }),
+  )
+).join(', ');
 
 interface Props {
   title?: string;
@@ -43,6 +56,15 @@ const currentPath = Astro.url.pathname;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Hero AVIF first so each navigation/reload starts the LCP image before font bytes compete. -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      imagesrcset={heroAvifSrcset}
+      imagesizes="100vw"
+      fetchpriority="high"
+    />
     <!-- Preload critical variable fonts so metrics settle before first paint (reduces swap “jitter”). -->
     <link rel="preload" href={interLatinWoff2} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={bricolageLatinWoff2} as="font" type="font/woff2" crossorigin />
