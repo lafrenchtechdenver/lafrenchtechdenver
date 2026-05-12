@@ -40,40 +40,55 @@ const membershipFormUrl = siteEntry.data.membershipFormUrl;
 
 <BaseLayout title="La French Tech Denver">
   <Hero
+    kicker="Colorado × France · Tech community"
     title="La French Tech Denver"
     subtitle="Your tech rendez-vous with a French touch and mountain views"
   />
 
-  <div class="container">
-    <div class="section card">
-      <h2>What is La French Tech Denver</h2>
-      <p>
-        French Tech Community Denver connects founders, tech talent, VCs, corporates and public
-        partners between France and Colorado — to accelerate growth with a focus on positive social
-        and environmental impact.
-      </p>
-      <p style="margin-top: 24px;">
-        <a class="cta" href={membershipFormUrl} target="_blank" rel="noopener"> Become a Member </a>
-      </p>
-    </div>
+  <div class="container home-bento">
+    <div class="home-bento-grid">
+      <article class="card home-intro">
+        <h2>What is La French Tech Denver</h2>
+        <p>
+          French Tech Community Denver connects founders, tech talent, VCs, corporates and public
+          partners between France and Colorado — to accelerate growth with a focus on positive
+          social and environmental impact.
+        </p>
+      </article>
 
-    <div class="section kpis">
-      {kpis.map((kpi) => <KpiCard value={kpi.data.value} label={kpi.data.label} />)}
-    </div>
+      <aside class="card home-cta-panel">
+        <div>
+          <p class="home-panel-eyebrow">Membership</p>
+          <p class="home-cta-lead">
+            Plug into operators, investors, and builders who care about craft, climate, and
+            cross-border momentum.
+          </p>
+        </div>
+        <p class="home-cta-actions">
+          <a class="cta" href={membershipFormUrl} target="_blank" rel="noopener">
+            Become a Member
+          </a>
+        </p>
+      </aside>
 
-    <div class="section card">
-      <h2>Friends & Partners</h2>
-      <div class="grid grid-3">
-        {
-          homePartners.map((partner) => (
-            <PartnerCard
-              name={partner.data.name}
-              tagline={partner.data.tagline}
-              url={partner.data.url}
-              logo={partner.data.logo}
-            />
-          ))
-        }
+      <div class="home-kpi-strip kpis">
+        {kpis.map((kpi) => <KpiCard value={kpi.data.value} label={kpi.data.label} />)}
+      </div>
+
+      <div class="card home-partners">
+        <h2>Friends & Partners</h2>
+        <div class="grid grid-3">
+          {
+            homePartners.map((partner) => (
+              <PartnerCard
+                name={partner.data.name}
+                tagline={partner.data.tagline}
+                url={partner.data.url}
+                logo={partner.data.logo}
+              />
+            ))
+          }
+        </div>
       </div>
     </div>
   </div>

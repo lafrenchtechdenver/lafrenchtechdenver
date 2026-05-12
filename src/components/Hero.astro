@@ -21,7 +21,7 @@
  * pseudo-element for the same reason.
  *
  * The hero image is the single Largest Contentful Paint candidate on every
- * page that uses this component, so it carries `loading="eager"`,
+ * page that uses it, so it carries `loading="eager"`,
  * `fetchpriority="high"`, and `decoding="sync"`. `BaseLayout.astro` preloads the
  * same AVIF `srcset` in `<head>` so each full-page navigation starts the image
  * before font preloads.
@@ -32,9 +32,11 @@ import heroImage from '../assets/hero.jpg';
 interface Props {
   title: string;
   subtitle?: string;
+  /** Optional mono-style line above the title (home page). */
+  kicker?: string;
 }
 
-const { title, subtitle } = Astro.props;
+const { title, subtitle, kicker } = Astro.props;
 ---
 
 <section class="hero">
@@ -53,6 +55,7 @@ const { title, subtitle } = Astro.props;
     formats={['avif', 'webp']}
   />
   <div class="container">
+    {kicker && <div class="hero-kicker">{kicker}</div>}
     <h1>{title}</h1>
     {subtitle && <p>{subtitle}</p>}
   </div>

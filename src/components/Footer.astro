@@ -1,13 +1,28 @@
 ---
 /**
- * Global site footer. Intentionally minimal — every page renders the same
- * single line. Year is dynamic to avoid stale copyright.
+ * Global site footer — brand line, sitemap-style shortcuts, copyright.
+ * Year is dynamic to avoid stale copyright.
  */
 const year = new Date().getFullYear();
+
+const footerLinks: Array<{ href: string; label: string }> = [
+  { href: '/index.html', label: 'Home' },
+  { href: '/about.html', label: 'About us' },
+  { href: '/companies-sponsors.html', label: 'Companies & Sponsors' },
+  { href: '/members-benefits.html', label: 'Members Benefits' },
+  { href: '/events.html', label: 'Events' },
+  { href: '/resources.html', label: 'Resources' },
+];
 ---
 
 <footer class="footer">
-  <div class="container">
-    <div>© {year} La French Tech Denver — Community-run in Denver, CO</div>
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <div class="footer-tagline">Colorado ↔ France · Tech community</div>
+      <div>© {year} La French Tech Denver — Community-run in Denver, CO</div>
+    </div>
+    <nav class="footer-nav" aria-label="Site">
+      {footerLinks.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
   </div>
 </footer>
