@@ -16,7 +16,8 @@
     "test:a11y": "playwright test tests/a11y.spec.ts tests/a11y-basic.spec.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "lockfile:check": "corepack pnpm install --frozen-lockfile"
   },
   "engines": {
     "node": ">=22.0.0"
