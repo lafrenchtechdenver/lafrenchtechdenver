@@ -5,6 +5,7 @@
   "type": "module",
   "description": "La French Tech Denver — static community brochure site, Astro 5 + Tailwind 4.",
   "scripts": {
+    "prepare": "husky",
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
